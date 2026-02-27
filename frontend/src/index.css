@@ -1,0 +1,187 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Nature-inspired emerald green palette */
+    --background: oklch(98% 0.01 150);
+    --foreground: oklch(25% 0.02 150);
+    --card: oklch(100% 0 0);
+    --card-foreground: oklch(25% 0.02 150);
+    --popover: oklch(100% 0 0);
+    --popover-foreground: oklch(25% 0.02 150);
+    --primary: oklch(55% 0.15 160);
+    --primary-foreground: oklch(98% 0.01 160);
+    --secondary: oklch(92% 0.03 150);
+    --secondary-foreground: oklch(25% 0.02 150);
+    --muted: oklch(95% 0.02 150);
+    --muted-foreground: oklch(50% 0.02 150);
+    --accent: oklch(88% 0.05 160);
+    --accent-foreground: oklch(25% 0.02 150);
+    --destructive: oklch(55% 0.20 25);
+    --destructive-foreground: oklch(98% 0.01 25);
+    --border: oklch(88% 0.03 150);
+    --input: oklch(88% 0.03 150);
+    --ring: oklch(55% 0.15 160);
+    --radius: 0.5rem;
+    --chart-1: oklch(60% 0.15 160);
+    --chart-2: oklch(70% 0.12 140);
+    --chart-3: oklch(65% 0.13 180);
+    --chart-4: oklch(75% 0.10 120);
+    --chart-5: oklch(55% 0.14 200);
+  }
+
+  .dark {
+    --background: oklch(20% 0.02 150);
+    --foreground: oklch(95% 0.01 150);
+    --card: oklch(22% 0.02 150);
+    --card-foreground: oklch(95% 0.01 150);
+    --popover: oklch(22% 0.02 150);
+    --popover-foreground: oklch(95% 0.01 150);
+    --primary: oklch(60% 0.15 160);
+    --primary-foreground: oklch(20% 0.02 160);
+    --secondary: oklch(28% 0.03 150);
+    --secondary-foreground: oklch(95% 0.01 150);
+    --muted: oklch(28% 0.03 150);
+    --muted-foreground: oklch(70% 0.02 150);
+    --accent: oklch(32% 0.05 160);
+    --accent-foreground: oklch(95% 0.01 150);
+    --destructive: oklch(55% 0.20 25);
+    --destructive-foreground: oklch(95% 0.01 25);
+    --border: oklch(32% 0.03 150);
+    --input: oklch(32% 0.03 150);
+    --ring: oklch(60% 0.15 160);
+    --chart-1: oklch(65% 0.15 160);
+    --chart-2: oklch(75% 0.12 140);
+    --chart-3: oklch(70% 0.13 180);
+    --chart-4: oklch(80% 0.10 120);
+    --chart-5: oklch(60% 0.14 200);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: oklch(95% 0.02 150);
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(70% 0.08 160);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(60% 0.12 160);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: oklch(25% 0.02 150);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: oklch(45% 0.08 160);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: oklch(55% 0.12 160);
+}
+
+/* Tablet and desktop optimizations */
+@media (min-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Tablet-specific layout optimizations */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* Optimize card grids for tablets */
+  .grid-cols-1 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  /* Adjust spacing for tablet screens */
+  .space-y-8 > * + * {
+    margin-top: 2.5rem;
+  }
+  
+  /* Optimize form layouts for tablets */
+  .tablet\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Large tablet and small desktop optimizations */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+/* Touch-friendly button sizing for mobile and tablet */
+@media (max-width: 1023px) {
+  button, a[role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Prevent text selection on touch devices for better UX */
+@media (hover: none) and (pointer: coarse) {
+  .select-none-touch {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Smooth scrolling for better mobile experience */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Safe area insets for notched devices */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(0px, env(safe-area-inset-left));
+    padding-right: max(0px, env(safe-area-inset-right));
+  }
+}
+
+/* Optimize images for mobile performance */
+img {
+  content-visibility: auto;
+}
+
+/* PWA splash screen styling */
+@media (display-mode: standalone) {
+  body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
