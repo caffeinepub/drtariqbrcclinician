@@ -1,41 +1,53 @@
-import { useState } from 'react';
-import { useSaveCallerUserProfile } from '../hooks/useQueries';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useSaveCallerUserProfile } from "../hooks/useQueries";
 
 export default function ProfileSetupModal() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const saveProfile = useSaveCallerUserProfile();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name.trim() || !email.trim() || !phone.trim()) {
-      toast.error('Please fill in all fields');
+      toast.error("Please fill in all fields");
       return;
     }
 
     try {
       await saveProfile.mutateAsync({ name, email, phone });
-      toast.success('Profile created successfully!');
+      toast.success("Profile created successfully!");
     } catch (error) {
-      toast.error('Failed to create profile. Please try again.');
-      console.error('Profile creation error:', error);
+      toast.error("Failed to create profile. Please try again.");
+      console.error("Profile creation error:", error);
     }
   };
 
   return (
     <Dialog open={true}>
-      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent
+        className="sm:max-w-md"
+        onPointerDownOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
-          <DialogTitle className="text-emerald-800">Welcome to BRC Clinician</DialogTitle>
+          <DialogTitle className="text-emerald-800">
+            Welcome to BRC Clinician
+          </DialogTitle>
           <DialogDescription>
-            Please complete your profile to continue. This information will be used for appointment bookings.
+            Please complete your profile to continue. This information will be
+            used for appointment bookings.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -76,7 +88,7 @@ export default function ProfileSetupModal() {
             className="w-full bg-emerald-600 hover:bg-emerald-700"
             disabled={saveProfile.isPending}
           >
-            {saveProfile.isPending ? 'Creating Profile...' : 'Complete Profile'}
+            {saveProfile.isPending ? "Creating Profile..." : "Complete Profile"}
           </Button>
         </form>
       </DialogContent>

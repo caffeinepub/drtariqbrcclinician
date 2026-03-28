@@ -1,17 +1,43 @@
-import { useState } from 'react';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useSubmitAppointment, useGetCallerUserProfile, useGetPaymentDetails, useGetEmailSettings } from '../hooks/useQueries';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Clock, Leaf, AlertCircle, Smartphone, CreditCard, IndianRupee, CheckCircle2 } from 'lucide-react';
-import { SiPaytm, SiGooglepay, SiPhonepe } from 'react-icons/si';
-import { toast } from 'sonner';
-import { ConsultationType, Status } from '../backend';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  CreditCard,
+  IndianRupee,
+  Leaf,
+  Smartphone,
+} from "lucide-react";
+import { useState } from "react";
+import { SiGooglepay, SiPaytm, SiPhonepe } from "react-icons/si";
+import { toast } from "sonner";
+import { ConsultationType, Status } from "../backend";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import {
+  useGetCallerUserProfile,
+  useGetEmailSettings,
+  useGetPaymentDetails,
+  useSubmitAppointment,
+} from "../hooks/useQueries";
 
 export default function AppointmentsPage() {
   const { identity } = useInternetIdentity();
@@ -20,12 +46,14 @@ export default function AppointmentsPage() {
   const { data: emailSettings } = useGetEmailSettings();
   const submitAppointment = useSubmitAppointment();
 
-  const [patientName, setPatientName] = useState('');
-  const [contactInfo, setContactInfo] = useState('');
-  const [preferredDate, setPreferredDate] = useState('');
-  const [preferredTime, setPreferredTime] = useState('');
-  const [consultationType, setConsultationType] = useState<'online' | 'clinicVisit'>('clinicVisit');
-  const [healthConcerns, setHealthConcerns] = useState('');
+  const [patientName, setPatientName] = useState("");
+  const [contactInfo, setContactInfo] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
+  const [preferredTime, setPreferredTime] = useState("");
+  const [consultationType, setConsultationType] = useState<
+    "online" | "clinicVisit"
+  >("clinicVisit");
+  const [healthConcerns, setHealthConcerns] = useState("");
 
   const isAuthenticated = !!identity;
   const emailNotificationsEnabled = emailSettings?.isEnabled ?? true;
@@ -34,33 +62,33 @@ export default function AppointmentsPage() {
     e.preventDefault();
 
     if (!isAuthenticated) {
-      toast.error('Please login to book an appointment');
+      toast.error("Please login to book an appointment");
       return;
     }
 
     // Validate all required fields
     if (!patientName.trim()) {
-      toast.error('Please enter your name');
+      toast.error("Please enter your name");
       return;
     }
 
     if (!contactInfo.trim()) {
-      toast.error('Please enter your contact information');
+      toast.error("Please enter your contact information");
       return;
     }
 
     if (!preferredDate) {
-      toast.error('Please select a preferred date');
+      toast.error("Please select a preferred date");
       return;
     }
 
     if (!preferredTime) {
-      toast.error('Please select a preferred time');
+      toast.error("Please select a preferred time");
       return;
     }
 
     if (!healthConcerns.trim()) {
-      toast.error('Please describe your health concerns');
+      toast.error("Please describe your health concerns");
       return;
     }
 
@@ -73,7 +101,10 @@ export default function AppointmentsPage() {
         patientName: patientName.trim(),
         contactInfo: contactInfo.trim(),
         preferredDateTime,
-        consultationType: consultationType === 'online' ? ConsultationType.online : ConsultationType.clinicVisit,
+        consultationType:
+          consultationType === "online"
+            ? ConsultationType.online
+            : ConsultationType.clinicVisit,
         healthConcerns: healthConcerns.trim(),
         status: Status.pending,
         dateSubmitted: currentDate,
@@ -82,22 +113,24 @@ export default function AppointmentsPage() {
       });
 
       // Success - appointment was saved
-      toast.success('Appointment request submitted successfully! We will contact you soon to confirm.');
-      
-      // Reset form
-      setPatientName('');
-      setContactInfo('');
-      setPreferredDate('');
-      setPreferredTime('');
-      setHealthConcerns('');
-      setConsultationType('clinicVisit');
+      toast.success(
+        "Appointment request submitted successfully! We will contact you soon to confirm.",
+      );
 
-      console.log('Appointment submitted with ID:', appointmentId);
+      // Reset form
+      setPatientName("");
+      setContactInfo("");
+      setPreferredDate("");
+      setPreferredTime("");
+      setHealthConcerns("");
+      setConsultationType("clinicVisit");
+
+      console.log("Appointment submitted with ID:", appointmentId);
     } catch (error: any) {
-      console.error('Appointment submission error:', error);
-      
+      console.error("Appointment submission error:", error);
+
       // Show appropriate error message
-      const errorMessage = error?.message || 'Failed to submit appointment';
+      const errorMessage = error?.message || "Failed to submit appointment";
       toast.error(`Error: ${errorMessage}. Please try again.`);
     }
   };
@@ -107,7 +140,7 @@ export default function AppointmentsPage() {
     if (userProfile) {
       setPatientName(userProfile.name);
       setContactInfo(`${userProfile.email} | ${userProfile.phone}`);
-      toast.success('Form auto-filled with your profile information');
+      toast.success("Form auto-filled with your profile information");
     }
   };
 
@@ -119,9 +152,12 @@ export default function AppointmentsPage() {
           <Calendar className="h-4 w-4" />
           <span>Book Appointment</span>
         </div>
-        <h1 className="mb-4 text-4xl font-bold text-emerald-800 md:text-5xl">Schedule Your Consultation</h1>
+        <h1 className="mb-4 text-4xl font-bold text-emerald-800 md:text-5xl">
+          Schedule Your Consultation
+        </h1>
         <p className="mx-auto max-w-2xl text-lg text-gray-600">
-          Take the first step towards natural wellness. Book an online consultation or clinic visit with Dr. Tariq.
+          Take the first step towards natural wellness. Book an online
+          consultation or clinic visit with Dr. Tariq.
         </p>
       </div>
 
@@ -129,10 +165,17 @@ export default function AppointmentsPage() {
         {/* Email Notification Info */}
         {emailNotificationsEnabled && (
           <Alert className="mb-6 border-emerald-200 bg-emerald-50">
-            <CheckCircle2 className="h-4 w-4" style={{ color: '#FF0000' }} />
-            <AlertTitle className="text-emerald-800">Email notifications: Enabled</AlertTitle>
+            <CheckCircle2 className="h-4 w-4" style={{ color: "#FF0000" }} />
+            <AlertTitle className="text-emerald-800">
+              Email notifications: Enabled
+            </AlertTitle>
             <AlertDescription className="text-emerald-700">
-              When you submit an appointment request, an automatic email notification will be sent to Dr. Tariq at <strong>{emailSettings?.recipientEmail || 'drtariqherbal@gmail.com'}</strong>. You will receive confirmation shortly.
+              When you submit an appointment request, an automatic email
+              notification will be sent to Dr. Tariq at{" "}
+              <strong>
+                {emailSettings?.recipientEmail || "drtariqherbal@gmail.com"}
+              </strong>
+              . You will receive confirmation shortly.
             </AlertDescription>
           </Alert>
         )}
@@ -145,8 +188,12 @@ export default function AppointmentsPage() {
                 <IndianRupee className="h-6 w-6 text-emerald-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-emerald-800">Naturopathic Consultation</h3>
-                <p className="text-sm text-gray-600">Initial consultation fee</p>
+                <h3 className="font-semibold text-emerald-800">
+                  Naturopathic Consultation
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Initial consultation fee
+                </p>
               </div>
             </div>
             <div className="text-right">
@@ -163,10 +210,12 @@ export default function AppointmentsPage() {
             <CardContent className="flex items-start gap-4 p-6">
               <AlertCircle className="h-6 w-6 shrink-0 text-amber-600" />
               <div>
-                <h3 className="mb-2 font-semibold text-amber-900">Login Required</h3>
+                <h3 className="mb-2 font-semibold text-amber-900">
+                  Login Required
+                </h3>
                 <p className="text-amber-800">
-                  Please login to book an appointment. This helps us maintain your appointment history and provide
-                  better service.
+                  Please login to book an appointment. This helps us maintain
+                  your appointment history and provide better service.
                 </p>
               </div>
             </CardContent>
@@ -174,9 +223,12 @@ export default function AppointmentsPage() {
         ) : (
           <Card className="border-emerald-200">
             <CardHeader>
-              <CardTitle className="text-2xl text-emerald-800">Appointment Details</CardTitle>
+              <CardTitle className="text-2xl text-emerald-800">
+                Appointment Details
+              </CardTitle>
               <CardDescription>
-                Fill in the form below to request an appointment. We'll contact you to confirm your booking.
+                Fill in the form below to request an appointment. We'll contact
+                you to confirm your booking.
               </CardDescription>
               {userProfile && (
                 <Button
@@ -233,7 +285,7 @@ export default function AppointmentsPage() {
                         value={preferredDate}
                         onChange={(e) => setPreferredDate(e.target.value)}
                         className="pl-10"
-                        min={new Date().toISOString().split('T')[0]}
+                        min={new Date().toISOString().split("T")[0]}
                         required
                         disabled={submitAppointment.isPending}
                       />
@@ -263,8 +315,8 @@ export default function AppointmentsPage() {
                   <Label htmlFor="consultationType">
                     Consultation Type <span className="text-red-500">*</span>
                   </Label>
-                  <Select 
-                    value={consultationType} 
+                  <Select
+                    value={consultationType}
                     onValueChange={(value: any) => setConsultationType(value)}
                     disabled={submitAppointment.isPending}
                   >
@@ -273,14 +325,17 @@ export default function AppointmentsPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="clinicVisit">Clinic Visit</SelectItem>
-                      <SelectItem value="online">Online Consultation</SelectItem>
+                      <SelectItem value="online">
+                        Online Consultation
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="healthConcerns">
-                    Health Concerns / Reason for Visit <span className="text-red-500">*</span>
+                    Health Concerns / Reason for Visit{" "}
+                    <span className="text-red-500">*</span>
                   </Label>
                   <Textarea
                     id="healthConcerns"
@@ -300,11 +355,11 @@ export default function AppointmentsPage() {
                 >
                   {submitAppointment.isPending ? (
                     <span className="flex items-center gap-2">
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                       Submitting...
                     </span>
                   ) : (
-                    'Submit Appointment Request'
+                    "Submit Appointment Request"
                   )}
                 </Button>
               </form>
@@ -319,10 +374,13 @@ export default function AppointmentsPage() {
               <div className="mb-3 inline-flex rounded-full bg-emerald-100 p-2">
                 <Leaf className="h-5 w-5 text-emerald-600" />
               </div>
-              <h3 className="mb-2 font-semibold text-emerald-800">What to Expect</h3>
+              <h3 className="mb-2 font-semibold text-emerald-800">
+                What to Expect
+              </h3>
               <p className="text-sm text-gray-700">
-                Your first consultation will include a comprehensive health assessment and discussion of your
-                wellness goals. Please bring any relevant medical records.
+                Your first consultation will include a comprehensive health
+                assessment and discussion of your wellness goals. Please bring
+                any relevant medical records.
               </p>
             </CardContent>
           </Card>
@@ -332,10 +390,13 @@ export default function AppointmentsPage() {
               <div className="mb-3 inline-flex rounded-full bg-teal-100 p-2">
                 <Clock className="h-5 w-5 text-teal-600" />
               </div>
-              <h3 className="mb-2 font-semibold text-teal-800">Appointment Duration</h3>
+              <h3 className="mb-2 font-semibold text-teal-800">
+                Appointment Duration
+              </h3>
               <p className="text-sm text-gray-700">
-                Initial consultations typically last 60-90 minutes. Follow-up appointments are usually 30-45
-                minutes. We ensure adequate time for thorough care.
+                Initial consultations typically last 60-90 minutes. Follow-up
+                appointments are usually 30-45 minutes. We ensure adequate time
+                for thorough care.
               </p>
             </CardContent>
           </Card>
@@ -349,7 +410,9 @@ export default function AppointmentsPage() {
                 <div className="rounded-full bg-emerald-100 p-2">
                   <CreditCard className="h-5 w-5 text-emerald-600" />
                 </div>
-                <CardTitle className="text-xl text-emerald-800">Payment Options</CardTitle>
+                <CardTitle className="text-xl text-emerald-800">
+                  Payment Options
+                </CardTitle>
               </div>
               <CardDescription>
                 We accept digital payments for your convenience
@@ -357,17 +420,27 @@ export default function AppointmentsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <h4 className="mb-3 font-semibold text-emerald-800">Accepted Payment Methods</h4>
+                <h4 className="mb-3 font-semibold text-emerald-800">
+                  Accepted Payment Methods
+                </h4>
                 <div className="flex flex-wrap gap-4">
-                  {paymentDetails.methods.map((method, index) => (
+                  {paymentDetails.methods.map((method) => (
                     <div
-                      key={index}
+                      key={method.method}
                       className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-white px-4 py-2"
                     >
-                      {method.method === 'Paytm' && <SiPaytm className="h-5 w-5 text-blue-600" />}
-                      {method.method === 'Google Pay' && <SiGooglepay className="h-5 w-5 text-blue-600" />}
-                      {method.method === 'PhonePe' && <SiPhonepe className="h-5 w-5 text-purple-600" />}
-                      <span className="font-medium text-gray-700">{method.method}</span>
+                      {method.method === "Paytm" && (
+                        <SiPaytm className="h-5 w-5 text-blue-600" />
+                      )}
+                      {method.method === "Google Pay" && (
+                        <SiGooglepay className="h-5 w-5 text-blue-600" />
+                      )}
+                      {method.method === "PhonePe" && (
+                        <SiPhonepe className="h-5 w-5 text-purple-600" />
+                      )}
+                      <span className="font-medium text-gray-700">
+                        {method.method}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -377,24 +450,34 @@ export default function AppointmentsPage() {
                 <div className="flex items-start gap-3">
                   <Smartphone className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
                   <div>
-                    <h4 className="mb-1 font-semibold text-emerald-800">Payment Number</h4>
-                    <p className="text-gray-700">{paymentDetails.methods[0]?.number}</p>
+                    <h4 className="mb-1 font-semibold text-emerald-800">
+                      Payment Number
+                    </h4>
+                    <p className="text-gray-700">
+                      {paymentDetails.methods[0]?.number}
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3">
                   <CreditCard className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
                   <div>
-                    <h4 className="mb-1 font-semibold text-emerald-800">UPI ID</h4>
-                    <p className="font-mono text-gray-700">{paymentDetails.methods[0]?.upiId}</p>
+                    <h4 className="mb-1 font-semibold text-emerald-800">
+                      UPI ID
+                    </h4>
+                    <p className="font-mono text-gray-700">
+                      {paymentDetails.methods[0]?.upiId}
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div className="rounded-lg border border-emerald-200 bg-white p-4">
                 <p className="text-sm text-gray-600">
-                  <strong className="text-emerald-800">Note:</strong> After booking your appointment, you can make
-                  payment using any of the above methods. Please keep your payment confirmation for reference.
+                  <strong className="text-emerald-800">Note:</strong> After
+                  booking your appointment, you can make payment using any of
+                  the above methods. Please keep your payment confirmation for
+                  reference.
                 </p>
               </div>
             </CardContent>

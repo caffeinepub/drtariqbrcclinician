@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
+import { useActor } from "./useActor";
 
 /**
  * Custom hook to keep the application alive and prevent canister hibernation
@@ -23,14 +23,17 @@ export function useKeepAlive() {
         // Use a lightweight query call to ping the backend
         // getHomePage is a simple query that doesn't modify state
         await actor.getHomePage();
-        
+
         // Optionally refresh critical queries to keep data fresh
-        queryClient.invalidateQueries({ queryKey: ['appointments'] });
-        queryClient.invalidateQueries({ queryKey: ['newAppointmentsCount'] });
-        
-        console.log('[Keep-Alive] Session renewed at', new Date().toLocaleTimeString());
+        queryClient.invalidateQueries({ queryKey: ["appointments"] });
+        queryClient.invalidateQueries({ queryKey: ["newAppointmentsCount"] });
+
+        console.log(
+          "[Keep-Alive] Session renewed at",
+          new Date().toLocaleTimeString(),
+        );
       } catch (error) {
-        console.error('[Keep-Alive] Ping failed:', error);
+        console.error("[Keep-Alive] Ping failed:", error);
         // Don't throw - we'll retry on next interval
       }
     };
@@ -61,27 +64,27 @@ export function useKeepAlive() {
 
     const handleUserActivity = () => {
       // Debounce: only ping if last ping was more than 2 minutes ago
-      const lastPing = sessionStorage.getItem('lastKeepAlivePing');
+      const lastPing = sessionStorage.getItem("lastKeepAlivePing");
       const now = Date.now();
-      
-      if (!lastPing || now - parseInt(lastPing) > 2 * 60 * 1000) {
+
+      if (!lastPing || now - Number.parseInt(lastPing) > 2 * 60 * 1000) {
         actor.getHomePage().catch(() => {
           // Silently fail - interval will retry
         });
-        sessionStorage.setItem('lastKeepAlivePing', now.toString());
+        sessionStorage.setItem("lastKeepAlivePing", now.toString());
       }
     };
 
     // Listen for user interactions
-    const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
-    events.forEach(event => {
+    const events = ["mousedown", "keydown", "scroll", "touchstart"];
+    for (const event of events) {
       window.addEventListener(event, handleUserActivity, { passive: true });
-    });
+    }
 
     return () => {
-      events.forEach(event => {
+      for (const event of events) {
         window.removeEventListener(event, handleUserActivity);
-      });
+      }
     };
   }, [actor]);
 }

@@ -1,15 +1,27 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import type { UserProfile, DoctorProfile, Service, Appointment, Testimonial, Inquiry, HomePage, PaymentDetails, PatientDetails, Status, EmailNotificationSettings } from '../backend';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type {
+  Appointment,
+  DoctorProfile,
+  EmailNotificationSettings,
+  HomePage,
+  Inquiry,
+  PatientDetails,
+  PaymentDetails,
+  Service,
+  Status,
+  Testimonial,
+  UserProfile,
+} from "../backend";
+import { useActor } from "./useActor";
 
 // User Profile Queries
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
 
   const query = useQuery<UserProfile | null>({
-    queryKey: ['currentUserProfile'],
+    queryKey: ["currentUserProfile"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getCallerUserProfile();
     },
     enabled: !!actor && !actorFetching,
@@ -29,11 +41,11 @@ export function useSaveCallerUserProfile() {
 
   return useMutation({
     mutationFn: async (profile: UserProfile) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.saveCallerUserProfile(profile);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      queryClient.invalidateQueries({ queryKey: ["currentUserProfile"] });
     },
   });
 }
@@ -43,7 +55,7 @@ export function useIsCallerAdmin() {
   const { actor, isFetching } = useActor();
 
   return useQuery<boolean>({
-    queryKey: ['isCallerAdmin'],
+    queryKey: ["isCallerAdmin"],
     queryFn: async () => {
       if (!actor) return false;
       try {
@@ -62,9 +74,9 @@ export function useGetHomePage() {
   const { actor, isFetching } = useActor();
 
   return useQuery<HomePage>({
-    queryKey: ['homePage'],
+    queryKey: ["homePage"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getHomePage();
     },
     enabled: !!actor && !isFetching,
@@ -78,9 +90,9 @@ export function useGetDoctorProfile() {
   const { actor, isFetching } = useActor();
 
   return useQuery<DoctorProfile>({
-    queryKey: ['doctorProfile'],
+    queryKey: ["doctorProfile"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getDoctorProfile();
     },
     enabled: !!actor && !isFetching,
@@ -94,9 +106,9 @@ export function useGetAllServices() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Service[]>({
-    queryKey: ['services'],
+    queryKey: ["services"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getAllServices();
     },
     enabled: !!actor && !isFetching,
@@ -112,20 +124,20 @@ export function useSubmitAppointment() {
 
   return useMutation({
     mutationFn: async (appointment: Appointment) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       const appointmentId = await actor.submitAppointment(appointment);
       return appointmentId;
     },
     onSuccess: () => {
       // Immediately invalidate all appointment-related queries
-      queryClient.invalidateQueries({ queryKey: ['appointments'] });
-      queryClient.invalidateQueries({ queryKey: ['newAppointmentsCount'] });
-      queryClient.invalidateQueries({ queryKey: ['patientDetails'] });
-      
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      queryClient.invalidateQueries({ queryKey: ["newAppointmentsCount"] });
+      queryClient.invalidateQueries({ queryKey: ["patientDetails"] });
+
       // Force refetch to ensure immediate visibility
-      queryClient.refetchQueries({ queryKey: ['appointments'] });
-      queryClient.refetchQueries({ queryKey: ['newAppointmentsCount'] });
-      queryClient.refetchQueries({ queryKey: ['patientDetails'] });
+      queryClient.refetchQueries({ queryKey: ["appointments"] });
+      queryClient.refetchQueries({ queryKey: ["newAppointmentsCount"] });
+      queryClient.refetchQueries({ queryKey: ["patientDetails"] });
     },
     retry: 2,
     retryDelay: 1000,
@@ -136,9 +148,9 @@ export function useGetAllAppointments() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Appointment[]>({
-    queryKey: ['appointments'],
+    queryKey: ["appointments"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       const appointments = await actor.getAllAppointments();
       return appointments;
     },
@@ -146,7 +158,7 @@ export function useGetAllAppointments() {
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes for admin views
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     refetchOnWindowFocus: true,
     staleTime: 30000, // Consider data stale after 30 seconds
   });
@@ -158,17 +170,17 @@ export function useUpdateAppointmentStatus() {
 
   return useMutation({
     mutationFn: async ({ id, status }: { id: bigint; status: Status }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.updateAppointmentStatus(id, status);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['appointments'] });
-      queryClient.invalidateQueries({ queryKey: ['newAppointmentsCount'] });
-      queryClient.invalidateQueries({ queryKey: ['patientDetails'] });
-      
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      queryClient.invalidateQueries({ queryKey: ["newAppointmentsCount"] });
+      queryClient.invalidateQueries({ queryKey: ["patientDetails"] });
+
       // Force refetch for immediate updates
-      queryClient.refetchQueries({ queryKey: ['appointments'] });
-      queryClient.refetchQueries({ queryKey: ['patientDetails'] });
+      queryClient.refetchQueries({ queryKey: ["appointments"] });
+      queryClient.refetchQueries({ queryKey: ["patientDetails"] });
     },
   });
 }
@@ -177,9 +189,9 @@ export function useGetNewAppointmentsCount() {
   const { actor, isFetching } = useActor();
 
   return useQuery<bigint>({
-    queryKey: ['newAppointmentsCount'],
+    queryKey: ["newAppointmentsCount"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getNewAppointmentsCount();
     },
     enabled: !!actor && !isFetching,
@@ -195,16 +207,16 @@ export function useMarkAppointmentsAsViewed() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.markAppointmentsAsViewed();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['appointments'] });
-      queryClient.invalidateQueries({ queryKey: ['newAppointmentsCount'] });
-      
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+      queryClient.invalidateQueries({ queryKey: ["newAppointmentsCount"] });
+
       // Force refetch
-      queryClient.refetchQueries({ queryKey: ['appointments'] });
-      queryClient.refetchQueries({ queryKey: ['newAppointmentsCount'] });
+      queryClient.refetchQueries({ queryKey: ["appointments"] });
+      queryClient.refetchQueries({ queryKey: ["newAppointmentsCount"] });
     },
   });
 }
@@ -214,9 +226,9 @@ export function useGetAllPatientDetails() {
   const { actor, isFetching } = useActor();
 
   return useQuery<PatientDetails[]>({
-    queryKey: ['patientDetails'],
+    queryKey: ["patientDetails"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       const patients = await actor.getAllPatientDetails();
       return patients;
     },
@@ -224,7 +236,7 @@ export function useGetAllPatientDetails() {
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     refetchOnWindowFocus: true,
     staleTime: 30000,
   });
@@ -235,7 +247,7 @@ export function useSearchPatientDetails() {
 
   return useMutation({
     mutationFn: async (searchTerm: string) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.searchPatientDetails(searchTerm);
     },
   });
@@ -246,9 +258,9 @@ export function useGetTestimonials() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Testimonial[]>({
-    queryKey: ['testimonials'],
+    queryKey: ["testimonials"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getTestimonials();
     },
     enabled: !!actor && !isFetching,
@@ -263,11 +275,11 @@ export function useSubmitTestimonial() {
 
   return useMutation({
     mutationFn: async (testimonial: Testimonial) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.submitTestimonial(testimonial);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['testimonials'] });
+      queryClient.invalidateQueries({ queryKey: ["testimonials"] });
     },
   });
 }
@@ -278,7 +290,7 @@ export function useSubmitInquiry() {
 
   return useMutation({
     mutationFn: async (inquiry: Inquiry) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.submitInquiry(inquiry);
     },
   });
@@ -289,9 +301,9 @@ export function useGetPaymentDetails() {
   const { actor, isFetching } = useActor();
 
   return useQuery<PaymentDetails>({
-    queryKey: ['paymentDetails'],
+    queryKey: ["paymentDetails"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getPaymentDetails();
     },
     enabled: !!actor && !isFetching,
@@ -305,16 +317,16 @@ export function useGetEmailSettings() {
   const { actor, isFetching } = useActor();
 
   return useQuery<EmailNotificationSettings>({
-    queryKey: ['emailSettings'],
+    queryKey: ["emailSettings"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getEmailSettings();
     },
     enabled: !!actor && !isFetching,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     refetchInterval: 2 * 60 * 1000, // Refetch every 2 minutes
-    refetchOnMount: 'always',
+    refetchOnMount: "always",
     staleTime: 30000,
   });
 }
@@ -325,12 +337,12 @@ export function useEnableEmailNotifications() {
 
   return useMutation({
     mutationFn: async (arg: null) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.enableEmailNotifications(arg);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['emailSettings'] });
-      queryClient.refetchQueries({ queryKey: ['emailSettings'] });
+      queryClient.invalidateQueries({ queryKey: ["emailSettings"] });
+      queryClient.refetchQueries({ queryKey: ["emailSettings"] });
     },
   });
 }
@@ -341,12 +353,12 @@ export function useDisableEmailNotifications() {
 
   return useMutation({
     mutationFn: async (arg: null) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.disableEmailNotifications(arg);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['emailSettings'] });
-      queryClient.refetchQueries({ queryKey: ['emailSettings'] });
+      queryClient.invalidateQueries({ queryKey: ["emailSettings"] });
+      queryClient.refetchQueries({ queryKey: ["emailSettings"] });
     },
   });
 }

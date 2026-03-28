@@ -1,22 +1,29 @@
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Download, X, Smartphone } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Download, Smartphone, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 export default function PWAInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [showPrompt, setShowPrompt] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
     // Check if app is already installed (PWA or Android app)
     if (
-      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as any).standalone === true
     ) {
       setIsInstalled(true);
@@ -26,35 +33,39 @@ export default function PWAInstallPrompt() {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      
+
       // Show prompt after a delay (don't show immediately)
       setTimeout(() => {
-        const dismissed = localStorage.getItem('pwa-install-dismissed');
-        const dismissedTime = localStorage.getItem('pwa-install-dismissed-time');
-        
+        const dismissed = localStorage.getItem("pwa-install-dismissed");
+        const dismissedTime = localStorage.getItem(
+          "pwa-install-dismissed-time",
+        );
+
         // Show again after 7 days if previously dismissed
         if (dismissed && dismissedTime) {
-          const daysSinceDismissed = (Date.now() - parseInt(dismissedTime)) / (1000 * 60 * 60 * 24);
+          const daysSinceDismissed =
+            (Date.now() - Number.parseInt(dismissedTime)) /
+            (1000 * 60 * 60 * 24);
           if (daysSinceDismissed < 7) {
             return;
           }
         }
-        
+
         setShowPrompt(true);
       }, 3000);
     };
 
-    window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener("beforeinstallprompt", handler);
 
     // Listen for app installed event
-    window.addEventListener('appinstalled', () => {
+    window.addEventListener("appinstalled", () => {
       setIsInstalled(true);
       setShowPrompt(false);
-      console.log('PWA was installed successfully');
+      console.log("PWA was installed successfully");
     });
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener("beforeinstallprompt", handler);
     };
   }, []);
 
@@ -64,11 +75,11 @@ export default function PWAInstallPrompt() {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
 
-    if (outcome === 'accepted') {
-      console.log('User accepted the install prompt');
+    if (outcome === "accepted") {
+      console.log("User accepted the install prompt");
       setIsInstalled(true);
     } else {
-      console.log('User dismissed the install prompt');
+      console.log("User dismissed the install prompt");
     }
 
     setDeferredPrompt(null);
@@ -77,8 +88,8 @@ export default function PWAInstallPrompt() {
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    localStorage.setItem('pwa-install-dismissed', 'true');
-    localStorage.setItem('pwa-install-dismissed-time', Date.now().toString());
+    localStorage.setItem("pwa-install-dismissed", "true");
+    localStorage.setItem("pwa-install-dismissed-time", Date.now().toString());
   };
 
   if (isInstalled || !showPrompt) return null;
@@ -110,7 +121,8 @@ export default function PWAInstallPrompt() {
         </CardHeader>
         <CardContent className="space-y-3 pt-0">
           <p className="text-sm text-muted-foreground">
-            Install our app for a better experience with offline access, faster loading, and easy access from your home screen.
+            Install our app for a better experience with offline access, faster
+            loading, and easy access from your home screen.
           </p>
           <div className="flex gap-2">
             <Button

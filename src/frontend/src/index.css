@@ -19,7 +19,7 @@
     --muted-foreground: oklch(50% 0.02 150);
     --accent: oklch(88% 0.05 160);
     --accent-foreground: oklch(25% 0.02 150);
-    --destructive: oklch(55% 0.20 25);
+    --destructive: oklch(55% 0.2 25);
     --destructive-foreground: oklch(98% 0.01 25);
     --border: oklch(88% 0.03 150);
     --input: oklch(88% 0.03 150);
@@ -28,7 +28,7 @@
     --chart-1: oklch(60% 0.15 160);
     --chart-2: oklch(70% 0.12 140);
     --chart-3: oklch(65% 0.13 180);
-    --chart-4: oklch(75% 0.10 120);
+    --chart-4: oklch(75% 0.1 120);
     --chart-5: oklch(55% 0.14 200);
   }
 
@@ -47,7 +47,7 @@
     --muted-foreground: oklch(70% 0.02 150);
     --accent: oklch(32% 0.05 160);
     --accent-foreground: oklch(95% 0.01 150);
-    --destructive: oklch(55% 0.20 25);
+    --destructive: oklch(55% 0.2 25);
     --destructive-foreground: oklch(95% 0.01 25);
     --border: oklch(32% 0.03 150);
     --input: oklch(32% 0.03 150);
@@ -55,7 +55,7 @@
     --chart-1: oklch(65% 0.15 160);
     --chart-2: oklch(75% 0.12 140);
     --chart-3: oklch(70% 0.13 180);
-    --chart-4: oklch(80% 0.10 120);
+    --chart-4: oklch(80% 0.1 120);
     --chart-5: oklch(60% 0.14 200);
   }
 }
@@ -124,12 +124,12 @@
   .grid-cols-1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
+
   /* Adjust spacing for tablet screens */
   .space-y-8 > * + * {
     margin-top: 2.5rem;
   }
-  
+
   /* Optimize form layouts for tablets */
   .tablet\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -145,7 +145,8 @@
 
 /* Touch-friendly button sizing for mobile and tablet */
 @media (max-width: 1023px) {
-  button, a[role="button"] {
+  button,
+  a[role="button"] {
     min-height: 44px;
     min-width: 44px;
   }

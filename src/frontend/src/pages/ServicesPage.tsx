@@ -1,143 +1,164 @@
-import { useGetAllServices } from '../hooks/useQueries';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Leaf, IndianRupee } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { IndianRupee, Leaf } from "lucide-react";
+import { useGetAllServices } from "../hooks/useQueries";
 
 // PERMANENT SERVICE INFORMATION - DO NOT MODIFY
 // These are the core BRC Clinician services with correct pricing
 const PERMANENT_SERVICES = [
   {
     id: 1n,
-    name: 'Naturopathic Consultation',
-    description: 'Comprehensive assessment and personalized treatment planning using natural healing methods',
+    name: "Naturopathic Consultation",
+    description:
+      "Comprehensive assessment and personalized treatment planning using natural healing methods",
     serviceType: {
-      serviceTypeName: 'Initial Consultation',
+      serviceTypeName: "Initial Consultation",
       serviceTypePrice: 600,
     },
   },
   {
     id: 2n,
-    name: 'Integrative Medicine Therapy',
-    description: 'Holistic treatment combining conventional and alternative medicine approaches',
+    name: "Integrative Medicine Therapy",
+    description:
+      "Holistic treatment combining conventional and alternative medicine approaches",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 1000,
     },
   },
   {
     id: 3n,
-    name: 'Nutritional Counseling',
-    description: 'Personalized dietary guidance and nutritional therapy for optimal health',
+    name: "Nutritional Counseling",
+    description:
+      "Personalized dietary guidance and nutritional therapy for optimal health",
     serviceType: {
-      serviceTypeName: 'Counseling Session',
+      serviceTypeName: "Counseling Session",
       serviceTypePrice: 1000,
     },
   },
   {
     id: 4n,
-    name: 'Herbal Medicine',
-    description: 'Traditional herbal remedies and plant-based therapeutic treatments',
+    name: "Herbal Medicine",
+    description:
+      "Traditional herbal remedies and plant-based therapeutic treatments",
     serviceType: {
-      serviceTypeName: 'Herbal Remedies',
+      serviceTypeName: "Herbal Remedies",
       serviceTypePrice: 1000,
     },
   },
   {
     id: 5n,
-    name: 'Stress Management Program',
-    description: 'Comprehensive stress reduction techniques and wellness strategies',
+    name: "Stress Management Program",
+    description:
+      "Comprehensive stress reduction techniques and wellness strategies",
     serviceType: {
-      serviceTypeName: 'Program Session',
+      serviceTypeName: "Program Session",
       serviceTypePrice: 1000,
     },
   },
   {
     id: 6n,
-    name: 'Electro Magnetic Therapy',
-    description: 'Therapeutic electromagnetic field treatment for healing and pain relief',
+    name: "Electro Magnetic Therapy",
+    description:
+      "Therapeutic electromagnetic field treatment for healing and pain relief",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 500,
     },
   },
   {
     id: 7n,
-    name: 'Hot and Cold Therapy',
-    description: 'Alternating temperature therapy for improved circulation and recovery',
+    name: "Hot and Cold Therapy",
+    description:
+      "Alternating temperature therapy for improved circulation and recovery",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 300,
     },
   },
   {
     id: 8n,
-    name: 'Steaming Therapy',
-    description: 'Steam-based treatment for detoxification and respiratory wellness',
+    name: "Steaming Therapy",
+    description:
+      "Steam-based treatment for detoxification and respiratory wellness",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 200,
     },
   },
   {
     id: 9n,
-    name: 'Hot Water Emersion',
-    description: 'Therapeutic hot water immersion therapy for muscle relaxation and healing',
+    name: "Hot Water Emersion",
+    description:
+      "Therapeutic hot water immersion therapy for muscle relaxation and healing",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 1000,
     },
   },
   {
     id: 10n,
-    name: 'DIP Diet Therapy',
-    description: 'Specialized dietary intervention program for optimal health outcomes',
+    name: "DIP Diet Therapy",
+    description:
+      "Specialized dietary intervention program for optimal health outcomes",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 1000,
     },
   },
   {
     id: 11n,
-    name: 'Mud Therapy',
-    description: 'Natural mud-based treatment for skin health and detoxification',
+    name: "Mud Therapy",
+    description:
+      "Natural mud-based treatment for skin health and detoxification",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 500,
     },
   },
   {
     id: 12n,
-    name: 'Face Therapy',
-    description: 'Specialized facial treatment for skin rejuvenation and wellness',
+    name: "Face Therapy",
+    description:
+      "Specialized facial treatment for skin rejuvenation and wellness",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 500,
     },
   },
   {
     id: 13n,
-    name: 'Taping for Disc and Heating Therapy',
-    description: 'Therapeutic taping combined with heat treatment for spinal health',
+    name: "Taping for Disc and Heating Therapy",
+    description:
+      "Therapeutic taping combined with heat treatment for spinal health",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 500,
     },
   },
   {
     id: 14n,
-    name: 'Massage Therapy',
-    description: 'Professional therapeutic massage for muscle relaxation and stress relief',
+    name: "Massage Therapy",
+    description:
+      "Professional therapeutic massage for muscle relaxation and stress relief",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 300,
     },
   },
   {
     id: 15n,
-    name: 'Zero Volt Therapy Guide',
-    description: 'Specialized electrical therapy guidance for pain management and healing',
+    name: "Zero Volt Therapy Guide",
+    description:
+      "Specialized electrical therapy guidance for pain management and healing",
     serviceType: {
-      serviceTypeName: 'Therapy Session',
+      serviceTypeName: "Therapy Session",
       serviceTypePrice: 500,
     },
   },
@@ -147,7 +168,10 @@ export default function ServicesPage() {
   const { data: backendServices } = useGetAllServices();
 
   // Use backend services if available, otherwise use permanent fallback - NO LOADING STATES
-  const services = backendServices && backendServices.length > 0 ? backendServices : PERMANENT_SERVICES;
+  const services =
+    backendServices && backendServices.length > 0
+      ? backendServices
+      : PERMANENT_SERVICES;
 
   return (
     <div className="container mx-auto px-4 py-16">
@@ -161,8 +185,8 @@ export default function ServicesPage() {
           Naturopathic & Integrative Care
         </h1>
         <p className="mx-auto max-w-2xl text-lg text-gray-600">
-          Discover our comprehensive range of natural healing services designed to restore balance and promote
-          optimal health.
+          Discover our comprehensive range of natural healing services designed
+          to restore balance and promote optimal health.
         </p>
       </div>
 
@@ -179,12 +203,19 @@ export default function ServicesPage() {
                   <div className="rounded-full bg-emerald-100 p-3">
                     <Leaf className="h-6 w-6 text-emerald-600" />
                   </div>
-                  <Badge variant="secondary" className="bg-emerald-50 text-emerald-700">
+                  <Badge
+                    variant="secondary"
+                    className="bg-emerald-50 text-emerald-700"
+                  >
                     {service.serviceType.serviceTypeName}
                   </Badge>
                 </div>
-                <CardTitle className="text-xl text-emerald-800">{service.name}</CardTitle>
-                <CardDescription className="text-base leading-relaxed">{service.description}</CardDescription>
+                <CardTitle className="text-xl text-emerald-800">
+                  {service.name}
+                </CardTitle>
+                <CardDescription className="text-base leading-relaxed">
+                  {service.description}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2 text-lg font-semibold text-emerald-700">
@@ -199,13 +230,16 @@ export default function ServicesPage() {
 
       {/* Additional Info */}
       <div className="mx-auto mt-16 max-w-4xl rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 p-8 text-center">
-        <h2 className="mb-4 text-2xl font-bold text-emerald-800">Not Sure Which Service is Right for You?</h2>
+        <h2 className="mb-4 text-2xl font-bold text-emerald-800">
+          Not Sure Which Service is Right for You?
+        </h2>
         <p className="mb-6 text-gray-700">
-          Schedule a consultation with Dr. Tariq to discuss your health concerns and create a personalized
-          treatment plan.
+          Schedule a consultation with Dr. Tariq to discuss your health concerns
+          and create a personalized treatment plan.
         </p>
         <p className="text-sm text-gray-600">
-          All services are tailored to your individual needs and may be combined for optimal results.
+          All services are tailored to your individual needs and may be combined
+          for optimal results.
         </p>
       </div>
     </div>

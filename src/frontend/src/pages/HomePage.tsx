@@ -1,22 +1,37 @@
-import { useNavigate } from '@tanstack/react-router';
-import { useGetDoctorProfile, useGetHomePage } from '../hooks/useQueries';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Award, Heart, Leaf, Sparkles, Calendar, MessageCircle, Phone, MapPin, Mail, LayoutDashboard, LogIn } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "@tanstack/react-router";
+import {
+  Award,
+  Calendar,
+  Heart,
+  LayoutDashboard,
+  Leaf,
+  LogIn,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Sparkles,
+} from "lucide-react";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import { useGetDoctorProfile, useGetHomePage } from "../hooks/useQueries";
 
 // PERMANENT CLINIC CONTACT INFORMATION - DO NOT MODIFY
 const PERMANENT_CONTACT_INFO = {
-  phone: '+91 7006566575',
-  address: 'Kralhar Kanispora near SBI Bank, Baramulla, Kashmir',
-  email: 'drtariqherbal@gmail.com',
+  phone: "+91 7006566575",
+  address: "Kralhar Kanispora near SBI Bank, Baramulla, Kashmir",
+  email: "drtariqherbal@gmail.com",
 };
 
-const PERMANENT_HEADLINE = 'Welcome to Dr BRC Clinician — Dr Tariq Akhoon';
-const PERMANENT_DOCTOR_NAME = 'Dr. Tariq Akhoon';
-const PERMANENT_QUALIFICATIONS = 'BNYS/MD, Certified Integrative Medicine Naturopath';
-const PERMANENT_BIOGRAPHY = 'Dr. Tariq Akhoon is a highly qualified Naturopathic Doctor with expertise in Integrative Medicine. He combines traditional naturopathic treatments with modern medical approaches to provide comprehensive patient care.';
-const PERMANENT_PHILOSOPHY = 'Our approach focuses on treating the whole person – mind, body, and spirit. We believe in the body\'s innate ability to heal and strive to restore balance through natural therapies and evidence-based integrative practices.';
+const PERMANENT_HEADLINE = "Welcome to Dr BRC Clinician — Dr Tariq Akhoon";
+const PERMANENT_DOCTOR_NAME = "Dr. Tariq Akhoon";
+const PERMANENT_QUALIFICATIONS =
+  "BNYS/MD, Certified Integrative Medicine Naturopath";
+const PERMANENT_BIOGRAPHY =
+  "Dr. Tariq Akhoon is a highly qualified Naturopathic Doctor with expertise in Integrative Medicine. He combines traditional naturopathic treatments with modern medical approaches to provide comprehensive patient care.";
+const PERMANENT_PHILOSOPHY =
+  "Our approach focuses on treating the whole person – mind, body, and spirit. We believe in the body's innate ability to heal and strive to restore balance through natural therapies and evidence-based integrative practices.";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -29,7 +44,8 @@ export default function HomePage() {
   // Use backend data with permanent fallback - NO LOADING STATES for static content
   const contactInfo = doctorProfile?.contactInfo || PERMANENT_CONTACT_INFO;
   const doctorName = doctorProfile?.name || PERMANENT_DOCTOR_NAME;
-  const qualifications = doctorProfile?.qualifications || PERMANENT_QUALIFICATIONS;
+  const qualifications =
+    doctorProfile?.qualifications || PERMANENT_QUALIFICATIONS;
   const biography = doctorProfile?.biography || PERMANENT_BIOGRAPHY;
   const philosophy = doctorProfile?.philosophy || PERMANENT_PHILOSOPHY;
   const headline = homePage?.headline || PERMANENT_HEADLINE;
@@ -38,7 +54,7 @@ export default function HomePage() {
     <div className="space-y-16 pb-16">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 text-white">
-        <div className="absolute inset-0 bg-[url('/assets/natural-healing.dim_600x400.jpg')] bg-cover bg-center opacity-10"></div>
+        <div className="absolute inset-0 bg-[url('/assets/natural-healing.dim_600x400.jpg')] bg-cover bg-center opacity-10" />
         <div className="container relative mx-auto px-4 py-20 md:py-32">
           <div className="grid gap-12 md:grid-cols-2 md:items-center">
             <div className="space-y-6">
@@ -50,12 +66,13 @@ export default function HomePage() {
                 {headline}
               </h1>
               <p className="text-lg text-emerald-50 md:text-xl">
-                Experience holistic healthcare with {doctorName}, a certified naturopathic doctor
-                specializing in integrative medicine. We treat the whole person – mind, body, and spirit.
+                Experience holistic healthcare with {doctorName}, a certified
+                naturopathic doctor specializing in integrative medicine. We
+                treat the whole person – mind, body, and spirit.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button
-                  onClick={() => navigate({ to: '/appointments' })}
+                  onClick={() => navigate({ to: "/appointments" })}
                   size="lg"
                   className="bg-white text-emerald-700 hover:bg-emerald-50"
                 >
@@ -63,7 +80,7 @@ export default function HomePage() {
                   Book Appointment
                 </Button>
                 <Button
-                  onClick={() => navigate({ to: '/services' })}
+                  onClick={() => navigate({ to: "/services" })}
                   size="lg"
                   variant="outline"
                   className="border-white text-white hover:bg-white/10"
@@ -72,7 +89,7 @@ export default function HomePage() {
                 </Button>
                 {/* Admin Login / Dashboard Button */}
                 <Button
-                  onClick={() => navigate({ to: '/admin/dashboard' })}
+                  onClick={() => navigate({ to: "/admin/dashboard" })}
                   size="lg"
                   variant="outline"
                   className="border-white text-white hover:bg-white/10"
@@ -105,7 +122,9 @@ export default function HomePage() {
                     <Award className="h-6 w-6 text-emerald-600" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">Certified</p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      Certified
+                    </p>
                     <p className="text-xs text-gray-600">BNYS/MD</p>
                   </div>
                 </div>
@@ -132,7 +151,9 @@ export default function HomePage() {
       <section className="container mx-auto px-4">
         <Card className="border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50">
           <CardContent className="p-8">
-            <h2 className="mb-6 text-center text-2xl font-bold text-emerald-800">Contact Information</h2>
+            <h2 className="mb-6 text-center text-2xl font-bold text-emerald-800">
+              Contact Information
+            </h2>
             <div className="grid gap-6 md:grid-cols-3">
               <div className="flex items-start gap-4">
                 <div className="rounded-full bg-emerald-100 p-3">
@@ -148,7 +169,9 @@ export default function HomePage() {
                   <MapPin className="h-6 w-6 text-teal-600" />
                 </div>
                 <div>
-                  <h3 className="mb-1 font-semibold text-emerald-800">Address</h3>
+                  <h3 className="mb-1 font-semibold text-emerald-800">
+                    Address
+                  </h3>
                   <p className="text-gray-700">{contactInfo.address}</p>
                 </div>
               </div>
@@ -172,7 +195,9 @@ export default function HomePage() {
           <h2 className="mb-4 text-3xl font-bold text-emerald-800 md:text-4xl">
             Meet {doctorName}
           </h2>
-          <p className="mb-2 text-lg font-medium text-emerald-600">{qualifications}</p>
+          <p className="mb-2 text-lg font-medium text-emerald-600">
+            {qualifications}
+          </p>
           <p className="text-lg leading-relaxed text-gray-700">{biography}</p>
         </div>
       </section>
@@ -185,8 +210,12 @@ export default function HomePage() {
               <div className="mb-6 inline-flex items-center justify-center rounded-full bg-emerald-100 p-4">
                 <Heart className="h-8 w-8 text-emerald-600" />
               </div>
-              <h3 className="mb-4 text-2xl font-bold text-emerald-800 md:text-3xl">Our Healing Philosophy</h3>
-              <p className="text-lg leading-relaxed text-gray-700">{philosophy}</p>
+              <h3 className="mb-4 text-2xl font-bold text-emerald-800 md:text-3xl">
+                Our Healing Philosophy
+              </h3>
+              <p className="text-lg leading-relaxed text-gray-700">
+                {philosophy}
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -203,10 +232,13 @@ export default function HomePage() {
               <div className="mb-4 inline-flex rounded-full bg-emerald-100 p-3">
                 <Leaf className="h-6 w-6 text-emerald-600" />
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-emerald-800">Natural Therapies</h3>
+              <h3 className="mb-2 text-xl font-semibold text-emerald-800">
+                Natural Therapies
+              </h3>
               <p className="text-gray-600">
-                Harness the power of nature with herbal medicine, nutritional counseling, and holistic treatments
-                tailored to your unique needs.
+                Harness the power of nature with herbal medicine, nutritional
+                counseling, and holistic treatments tailored to your unique
+                needs.
               </p>
             </CardContent>
           </Card>
@@ -216,10 +248,12 @@ export default function HomePage() {
               <div className="mb-4 inline-flex rounded-full bg-teal-100 p-3">
                 <Sparkles className="h-6 w-6 text-teal-600" />
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-emerald-800">Integrative Approach</h3>
+              <h3 className="mb-2 text-xl font-semibold text-emerald-800">
+                Integrative Approach
+              </h3>
               <p className="text-gray-600">
-                Combining the best of conventional medicine with evidence-based natural therapies for comprehensive
-                care.
+                Combining the best of conventional medicine with evidence-based
+                natural therapies for comprehensive care.
               </p>
             </CardContent>
           </Card>
@@ -229,10 +263,12 @@ export default function HomePage() {
               <div className="mb-4 inline-flex rounded-full bg-emerald-100 p-3">
                 <Heart className="h-6 w-6 text-emerald-600" />
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-emerald-800">Personalized Care</h3>
+              <h3 className="mb-2 text-xl font-semibold text-emerald-800">
+                Personalized Care
+              </h3>
               <p className="text-gray-600">
-                Every patient receives individualized attention and treatment plans designed specifically for their
-                health goals.
+                Every patient receives individualized attention and treatment
+                plans designed specifically for their health goals.
               </p>
             </CardContent>
           </Card>
@@ -287,13 +323,16 @@ export default function HomePage() {
       <section className="container mx-auto px-4">
         <Card className="overflow-hidden border-emerald-200 bg-gradient-to-br from-emerald-600 to-teal-600 text-white">
           <CardContent className="p-8 text-center md:p-12">
-            <h2 className="mb-4 text-3xl font-bold md:text-4xl">Ready to Start Your Healing Journey?</h2>
+            <h2 className="mb-4 text-3xl font-bold md:text-4xl">
+              Ready to Start Your Healing Journey?
+            </h2>
             <p className="mb-8 text-lg text-emerald-50">
-              Book your consultation today and take the first step towards natural wellness.
+              Book your consultation today and take the first step towards
+              natural wellness.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button
-                onClick={() => navigate({ to: '/appointments' })}
+                onClick={() => navigate({ to: "/appointments" })}
                 size="lg"
                 className="bg-white text-emerald-700 hover:bg-emerald-50"
               >
@@ -301,7 +340,7 @@ export default function HomePage() {
                 Schedule Appointment
               </Button>
               <Button
-                onClick={() => navigate({ to: '/contact' })}
+                onClick={() => navigate({ to: "/contact" })}
                 size="lg"
                 variant="outline"
                 className="border-white text-white hover:bg-white/10"

@@ -1,11 +1,11 @@
-import { Heart, Phone, MapPin, Mail } from 'lucide-react';
+import { Heart, Mail, MapPin, Phone } from "lucide-react";
 
 // PERMANENT CLINIC CONTACT INFORMATION - DO NOT MODIFY
 // These values are hardcoded to ensure they remain permanent across all builds
 const PERMANENT_CONTACT_INFO = {
-  phone: '+91 7006566575',
-  address: 'Kralhar Kanispora near SBI Bank, Baramulla, Kashmir',
-  email: 'drtariqherbal@gmail.com',
+  phone: "+91 7006566575",
+  address: "Kralhar Kanispora near SBI Bank, Baramulla, Kashmir",
+  email: "drtariqherbal@gmail.com",
 };
 
 export default function Footer() {
@@ -16,14 +16,16 @@ export default function Footer() {
           {/* Logo and Branding */}
           <div className="flex flex-col items-center gap-3 md:items-start">
             <div className="flex items-center gap-2 text-emerald-800">
-              <img 
-                src="/assets/generated/dr-brc-logo-transparent.dim_200x200.png" 
-                alt="Dr BRC Clinician Logo" 
+              <img
+                src="/assets/generated/dr-brc-logo-transparent.dim_200x200.png"
+                alt="Dr BRC Clinician Logo"
                 className="h-8 w-8 object-contain"
               />
               <span className="font-semibold">BRC Clinician</span>
             </div>
-            <p className="text-sm text-gray-600">Natural Healing & Integrative Medicine</p>
+            <p className="text-sm text-gray-600">
+              Natural Healing & Integrative Medicine
+            </p>
           </div>
 
           {/* PERMANENT Contact Information - DO NOT REMOVE */}
@@ -31,15 +33,18 @@ export default function Footer() {
             <h3 className="font-semibold text-emerald-800">Contact Us</h3>
             <div className="space-y-2 text-sm text-gray-600">
               <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4" style={{ color: '#FF0000' }} />
+                <Phone className="h-4 w-4" style={{ color: "#FF0000" }} />
                 <span>{PERMANENT_CONTACT_INFO.phone}</span>
               </div>
               <div className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0" style={{ color: '#FF0000' }} />
+                <MapPin
+                  className="mt-0.5 h-4 w-4 flex-shrink-0"
+                  style={{ color: "#FF0000" }}
+                />
                 <span>{PERMANENT_CONTACT_INFO.address}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4" style={{ color: '#FF0000' }} />
+                <Mail className="h-4 w-4" style={{ color: "#FF0000" }} />
                 <span>{PERMANENT_CONTACT_INFO.email}</span>
               </div>
             </div>
@@ -48,8 +53,9 @@ export default function Footer() {
           {/* Attribution */}
           <div className="flex flex-col items-center gap-3 md:items-end">
             <div className="text-center text-sm text-gray-600 md:text-right">
-              © 2025. Built with{' '}
-              <Heart className="inline h-4 w-4 fill-rose-500 text-rose-500" /> using{' '}
+              © 2025. Built with{" "}
+              <Heart className="inline h-4 w-4 fill-rose-500 text-rose-500" />{" "}
+              using{" "}
               <a
                 href="https://caffeine.ai"
                 target="_blank"

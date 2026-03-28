@@ -1,25 +1,48 @@
-import { useIsCallerAdmin, useGetAllPatientDetails } from '../hooks/useQueries';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Users, Search, ArrowUpDown, Loader2, AlertCircle } from 'lucide-react';
-import { useState, useMemo } from 'react';
-import { Status, PatientStatus } from '../backend';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { AlertCircle, ArrowUpDown, Loader2, Search, Users } from "lucide-react";
+import { useMemo, useState } from "react";
+import { PatientStatus, Status } from "../backend";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import { useGetAllPatientDetails, useIsCallerAdmin } from "../hooks/useQueries";
 
-type SortField = 'name' | 'appointmentCount' | 'mostRecentAppointmentDate' | 'status';
-type SortDirection = 'asc' | 'desc';
+type SortField =
+  | "name"
+  | "appointmentCount"
+  | "mostRecentAppointmentDate"
+  | "status";
+type SortDirection = "asc" | "desc";
 
 export default function AdminPatientsPage() {
   const { identity } = useInternetIdentity();
   const { data: isAdmin, isLoading: adminCheckLoading } = useIsCallerAdmin();
-  const { data: patients, isLoading: patientsLoading, error } = useGetAllPatientDetails();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortField, setSortField] = useState<SortField>('mostRecentAppointmentDate');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const {
+    data: patients,
+    isLoading: patientsLoading,
+    error,
+  } = useGetAllPatientDetails();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortField, setSortField] = useState<SortField>(
+    "mostRecentAppointmentDate",
+  );
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const isAuthenticated = !!identity;
 
@@ -35,7 +58,7 @@ export default function AdminPatientsPage() {
         (patient) =>
           patient.name.toLowerCase().includes(lowerSearch) ||
           patient.contactInfo.email.toLowerCase().includes(lowerSearch) ||
-          patient.contactInfo.phone.toLowerCase().includes(lowerSearch)
+          patient.contactInfo.phone.toLowerCase().includes(lowerSearch),
       );
     }
 
@@ -44,29 +67,38 @@ export default function AdminPatientsPage() {
       let comparison = 0;
 
       switch (sortField) {
-        case 'name':
+        case "name":
           comparison = a.name.localeCompare(b.name);
           break;
-        case 'appointmentCount':
+        case "appointmentCount":
           comparison = Number(a.appointmentCount) - Number(b.appointmentCount);
           break;
-        case 'mostRecentAppointmentDate':
-          comparison = new Date(a.mostRecentAppointmentDate).getTime() - new Date(b.mostRecentAppointmentDate).getTime();
+        case "mostRecentAppointmentDate":
+          comparison =
+            new Date(a.mostRecentAppointmentDate).getTime() -
+            new Date(b.mostRecentAppointmentDate).getTime();
           break;
-        case 'status':
-          const statusOrder = { [PatientStatus.active]: 0, [PatientStatus.inactive]: 1 };
-          comparison = statusOrder[a.lastVisitStatus] - statusOrder[b.lastVisitStatus];
+        case "status": {
+          const statusOrder = {
+            [PatientStatus.active]: 0,
+            [PatientStatus.inactive]: 1,
+          };
+          comparison =
+            statusOrder[a.lastVisitStatus] - statusOrder[b.lastVisitStatus];
           break;
+        }
       }
 
-      return sortDirection === 'asc' ? comparison : -comparison;
+      return sortDirection === "asc" ? comparison : -comparison;
     });
 
     return sorted;
   }, [patients, searchTerm, sortField, sortDirection]);
 
   const totalPatients = patients?.length || 0;
-  const activePatients = patients?.filter((p) => p.lastVisitStatus === PatientStatus.active).length || 0;
+  const activePatients =
+    patients?.filter((p) => p.lastVisitStatus === PatientStatus.active)
+      .length || 0;
   const inactivePatients = totalPatients - activePatients;
 
   // Show loading state while checking admin status
@@ -76,7 +108,9 @@ export default function AdminPatientsPage() {
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="text-center">
             <Loader2 className="mx-auto h-12 w-12 animate-spin text-emerald-600" />
-            <p className="mt-4 text-muted-foreground">Loading patient details...</p>
+            <p className="mt-4 text-muted-foreground">
+              Loading patient details...
+            </p>
           </div>
         </div>
       </div>
@@ -90,7 +124,8 @@ export default function AdminPatientsPage() {
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            Access denied. You must be logged in as an administrator to view patient details.
+            Access denied. You must be logged in as an administrator to view
+            patient details.
           </AlertDescription>
         </Alert>
       </div>
@@ -113,26 +148,41 @@ export default function AdminPatientsPage() {
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('desc');
+      setSortDirection("desc");
     }
   };
 
   const getStatusBadge = (status: PatientStatus) => {
     if (status === PatientStatus.active) {
-      return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">Active</Badge>;
+      return (
+        <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+          Active
+        </Badge>
+      );
     }
     return <Badge variant="secondary">Inactive</Badge>;
   };
 
   const getAppointmentStatusBadge = (status: Status) => {
     if (status === Status.pending) {
-      return <Badge variant="outline" className="border-yellow-300 bg-yellow-50 text-yellow-800">Pending</Badge>;
+      return (
+        <Badge
+          variant="outline"
+          className="border-yellow-300 bg-yellow-50 text-yellow-800"
+        >
+          Pending
+        </Badge>
+      );
     }
     if (status === Status.confirmed) {
-      return <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">Confirmed</Badge>;
+      return (
+        <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200">
+          Confirmed
+        </Badge>
+      );
     }
     if (status === Status.cancelled) {
       return <Badge variant="destructive">Cancelled</Badge>;
@@ -145,8 +195,10 @@ export default function AdminPatientsPage() {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <Users className="h-8 w-8" style={{ color: '#FF0000' }} />
-          <h1 className="text-3xl font-bold text-emerald-900">Patient Details</h1>
+          <Users className="h-8 w-8" style={{ color: "#FF0000" }} />
+          <h1 className="text-3xl font-bold text-emerald-900">
+            Patient Details
+          </h1>
         </div>
         <p className="text-muted-foreground">
           Manage and view all patients who have booked appointments
@@ -158,19 +210,25 @@ export default function AdminPatientsPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Total Patients</CardDescription>
-            <CardTitle className="text-3xl text-emerald-700">{totalPatients}</CardTitle>
+            <CardTitle className="text-3xl text-emerald-700">
+              {totalPatients}
+            </CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Active Patients</CardDescription>
-            <CardTitle className="text-3xl text-emerald-600">{activePatients}</CardTitle>
+            <CardTitle className="text-3xl text-emerald-600">
+              {activePatients}
+            </CardTitle>
           </CardHeader>
         </Card>
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Inactive Patients</CardDescription>
-            <CardTitle className="text-3xl text-gray-600">{inactivePatients}</CardTitle>
+            <CardTitle className="text-3xl text-gray-600">
+              {inactivePatients}
+            </CardTitle>
           </CardHeader>
         </Card>
       </div>
@@ -196,7 +254,8 @@ export default function AdminPatientsPage() {
         <CardHeader>
           <CardTitle>All Patients</CardTitle>
           <CardDescription>
-            {filteredAndSortedPatients.length} patient{filteredAndSortedPatients.length !== 1 ? 's' : ''} found
+            {filteredAndSortedPatients.length} patient
+            {filteredAndSortedPatients.length !== 1 ? "s" : ""} found
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -204,10 +263,14 @@ export default function AdminPatientsPage() {
             <div className="py-12 text-center">
               <Users className="mx-auto h-12 w-12 text-muted-foreground/50" />
               <p className="mt-4 text-lg font-medium text-muted-foreground">
-                {searchTerm ? 'No patients found matching your search' : 'No patients found'}
+                {searchTerm
+                  ? "No patients found matching your search"
+                  : "No patients found"}
               </p>
               <p className="mt-2 text-sm text-muted-foreground">
-                {searchTerm ? 'Try adjusting your search terms' : 'Patients will appear here once appointments are booked'}
+                {searchTerm
+                  ? "Try adjusting your search terms"
+                  : "Patients will appear here once appointments are booked"}
               </p>
             </div>
           ) : (
@@ -219,11 +282,14 @@ export default function AdminPatientsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleSort('name')}
+                        onClick={() => handleSort("name")}
                         className="flex items-center gap-1 hover:text-emerald-700"
                       >
                         Patient Name
-                        <ArrowUpDown className="h-3 w-3" style={{ color: '#FF0000' }} />
+                        <ArrowUpDown
+                          className="h-3 w-3"
+                          style={{ color: "#FF0000" }}
+                        />
                       </Button>
                     </TableHead>
                     <TableHead>Contact Information</TableHead>
@@ -231,22 +297,28 @@ export default function AdminPatientsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleSort('appointmentCount')}
+                        onClick={() => handleSort("appointmentCount")}
                         className="flex items-center gap-1 hover:text-emerald-700"
                       >
                         Appointments
-                        <ArrowUpDown className="h-3 w-3" style={{ color: '#FF0000' }} />
+                        <ArrowUpDown
+                          className="h-3 w-3"
+                          style={{ color: "#FF0000" }}
+                        />
                       </Button>
                     </TableHead>
                     <TableHead>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleSort('mostRecentAppointmentDate')}
+                        onClick={() => handleSort("mostRecentAppointmentDate")}
                         className="flex items-center gap-1 hover:text-emerald-700"
                       >
                         Recent Visit
-                        <ArrowUpDown className="h-3 w-3" style={{ color: '#FF0000' }} />
+                        <ArrowUpDown
+                          className="h-3 w-3"
+                          style={{ color: "#FF0000" }}
+                        />
                       </Button>
                     </TableHead>
                     <TableHead>Last Status</TableHead>
@@ -254,11 +326,14 @@ export default function AdminPatientsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleSort('status')}
+                        onClick={() => handleSort("status")}
                         className="flex items-center gap-1 hover:text-emerald-700"
                       >
                         Activity
-                        <ArrowUpDown className="h-3 w-3" style={{ color: '#FF0000' }} />
+                        <ArrowUpDown
+                          className="h-3 w-3"
+                          style={{ color: "#FF0000" }}
+                        />
                       </Button>
                     </TableHead>
                   </TableRow>
@@ -266,10 +341,15 @@ export default function AdminPatientsPage() {
                 <TableBody>
                   {filteredAndSortedPatients.map((patient, index) => (
                     <TableRow key={`${patient.name}-${index}`}>
-                      <TableCell className="font-medium">{patient.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {patient.name}
+                      </TableCell>
                       <TableCell>
                         <div className="space-y-1 text-sm">
-                          <div className="text-muted-foreground">{patient.contactInfo.email || patient.contactInfo.phone}</div>
+                          <div className="text-muted-foreground">
+                            {patient.contactInfo.email ||
+                              patient.contactInfo.phone}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -280,8 +360,12 @@ export default function AdminPatientsPage() {
                       <TableCell className="text-sm text-muted-foreground">
                         {patient.mostRecentAppointmentDate}
                       </TableCell>
-                      <TableCell>{getAppointmentStatusBadge(patient.status)}</TableCell>
-                      <TableCell>{getStatusBadge(patient.lastVisitStatus)}</TableCell>
+                      <TableCell>
+                        {getAppointmentStatusBadge(patient.status)}
+                      </TableCell>
+                      <TableCell>
+                        {getStatusBadge(patient.lastVisitStatus)}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

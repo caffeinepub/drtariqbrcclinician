@@ -1,20 +1,33 @@
-import { useState } from 'react';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useSubmitInquiry, useGetDoctorProfile, useGetCallerUserProfile, useGetPaymentDetails } from '../hooks/useQueries';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { MapPin, Phone, Mail, Clock, AlertCircle, CreditCard, Smartphone } from 'lucide-react';
-import { SiPaytm, SiGooglepay, SiPhonepe } from 'react-icons/si';
-import { toast } from 'sonner';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertCircle,
+  Clock,
+  CreditCard,
+  Mail,
+  MapPin,
+  Phone,
+  Smartphone,
+} from "lucide-react";
+import { useState } from "react";
+import { SiGooglepay, SiPaytm, SiPhonepe } from "react-icons/si";
+import { toast } from "sonner";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import {
+  useGetCallerUserProfile,
+  useGetDoctorProfile,
+  useGetPaymentDetails,
+  useSubmitInquiry,
+} from "../hooks/useQueries";
 
 // PERMANENT CLINIC CONTACT INFORMATION - DO NOT MODIFY
 const PERMANENT_CONTACT_INFO = {
-  phone: '+91 7006566575',
-  address: 'Kralhar Kanispora near SBI Bank, Baramulla, Kashmir',
-  email: 'drtariqherbal@gmail.com',
+  phone: "+91 7006566575",
+  address: "Kralhar Kanispora near SBI Bank, Baramulla, Kashmir",
+  email: "drtariqherbal@gmail.com",
 };
 
 export default function ContactPage() {
@@ -24,25 +37,26 @@ export default function ContactPage() {
   const { data: paymentDetails } = useGetPaymentDetails();
   const submitInquiry = useSubmitInquiry();
 
-  const [name, setName] = useState('');
-  const [contactInfo, setContactInfo] = useState('');
-  const [message, setMessage] = useState('');
+  const [name, setName] = useState("");
+  const [contactInfo, setContactInfo] = useState("");
+  const [message, setMessage] = useState("");
 
   const isAuthenticated = !!identity;
 
   // Use backend data with permanent fallback
-  const clinicContactInfo = doctorProfile?.contactInfo || PERMANENT_CONTACT_INFO;
+  const clinicContactInfo =
+    doctorProfile?.contactInfo || PERMANENT_CONTACT_INFO;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isAuthenticated) {
-      toast.error('Please login to submit an inquiry');
+      toast.error("Please login to submit an inquiry");
       return;
     }
 
     if (!name.trim() || !contactInfo.trim() || !message.trim()) {
-      toast.error('Please fill in all fields');
+      toast.error("Please fill in all fields");
       return;
     }
 
@@ -56,13 +70,15 @@ export default function ContactPage() {
         dateSubmitted: currentDate,
       });
 
-      toast.success('Your inquiry has been submitted. We will get back to you soon!');
-      setName('');
-      setContactInfo('');
-      setMessage('');
+      toast.success(
+        "Your inquiry has been submitted. We will get back to you soon!",
+      );
+      setName("");
+      setContactInfo("");
+      setMessage("");
     } catch (error) {
-      toast.error('Failed to submit inquiry. Please try again.');
-      console.error('Inquiry submission error:', error);
+      toast.error("Failed to submit inquiry. Please try again.");
+      console.error("Inquiry submission error:", error);
     }
   };
 
@@ -70,7 +86,7 @@ export default function ContactPage() {
     if (userProfile) {
       setName(userProfile.name);
       setContactInfo(`${userProfile.email} | ${userProfile.phone}`);
-      toast.success('Form auto-filled with your profile information');
+      toast.success("Form auto-filled with your profile information");
     }
   };
 
@@ -82,10 +98,12 @@ export default function ContactPage() {
           <Mail className="h-4 w-4" />
           <span>Contact Us</span>
         </div>
-        <h1 className="mb-4 text-4xl font-bold text-emerald-800 md:text-5xl">Get in Touch</h1>
+        <h1 className="mb-4 text-4xl font-bold text-emerald-800 md:text-5xl">
+          Get in Touch
+        </h1>
         <p className="mx-auto max-w-2xl text-lg text-gray-600">
-          Have questions about our services? We're here to help. Reach out to us and we'll respond as soon as
-          possible.
+          Have questions about our services? We're here to help. Reach out to us
+          and we'll respond as soon as possible.
         </p>
       </div>
 
@@ -98,9 +116,12 @@ export default function ContactPage() {
                 <CardContent className="flex items-start gap-4 p-6">
                   <AlertCircle className="h-6 w-6 flex-shrink-0 text-amber-600" />
                   <div>
-                    <h3 className="mb-2 font-semibold text-amber-900">Login Required</h3>
+                    <h3 className="mb-2 font-semibold text-amber-900">
+                      Login Required
+                    </h3>
                     <p className="text-amber-800">
-                      Please login to submit an inquiry. This helps us respond to you more effectively.
+                      Please login to submit an inquiry. This helps us respond
+                      to you more effectively.
                     </p>
                   </div>
                 </CardContent>
@@ -108,7 +129,9 @@ export default function ContactPage() {
             ) : (
               <Card className="border-emerald-200">
                 <CardHeader>
-                  <CardTitle className="text-2xl text-emerald-800">Send Us a Message</CardTitle>
+                  <CardTitle className="text-2xl text-emerald-800">
+                    Send Us a Message
+                  </CardTitle>
                   {userProfile && (
                     <Button
                       type="button"
@@ -162,7 +185,7 @@ export default function ContactPage() {
                       className="w-full bg-emerald-600 hover:bg-emerald-700"
                       disabled={submitInquiry.isPending}
                     >
-                      {submitInquiry.isPending ? 'Sending...' : 'Send Message'}
+                      {submitInquiry.isPending ? "Sending..." : "Send Message"}
                     </Button>
                   </form>
                 </CardContent>
@@ -179,7 +202,9 @@ export default function ContactPage() {
                     <MapPin className="h-6 w-6 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="mb-2 font-semibold text-emerald-800">Clinic Address</h3>
+                    <h3 className="mb-2 font-semibold text-emerald-800">
+                      Clinic Address
+                    </h3>
                     <p className="text-gray-700">{clinicContactInfo.address}</p>
                   </div>
                 </div>
@@ -193,7 +218,9 @@ export default function ContactPage() {
                     <Phone className="h-6 w-6 text-teal-600" />
                   </div>
                   <div>
-                    <h3 className="mb-2 font-semibold text-emerald-800">Phone Number</h3>
+                    <h3 className="mb-2 font-semibold text-emerald-800">
+                      Phone Number
+                    </h3>
                     <p className="text-gray-700">{clinicContactInfo.phone}</p>
                   </div>
                 </div>
@@ -207,7 +234,9 @@ export default function ContactPage() {
                     <Mail className="h-6 w-6 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="mb-2 font-semibold text-emerald-800">Email</h3>
+                    <h3 className="mb-2 font-semibold text-emerald-800">
+                      Email
+                    </h3>
                     <p className="text-gray-700">{clinicContactInfo.email}</p>
                   </div>
                 </div>
@@ -221,7 +250,9 @@ export default function ContactPage() {
                     <Clock className="h-6 w-6 text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="mb-3 font-semibold text-emerald-800">Business Hours</h3>
+                    <h3 className="mb-3 font-semibold text-emerald-800">
+                      Business Hours
+                    </h3>
                     <div className="space-y-2 text-sm text-gray-700">
                       <div className="flex justify-between">
                         <span className="font-medium">Monday - Friday:</span>
@@ -249,22 +280,34 @@ export default function ContactPage() {
                     <div className="rounded-full bg-emerald-100 p-2">
                       <CreditCard className="h-5 w-5 text-emerald-600" />
                     </div>
-                    <CardTitle className="text-xl text-emerald-800">Payment Options</CardTitle>
+                    <CardTitle className="text-xl text-emerald-800">
+                      Payment Options
+                    </CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h4 className="mb-3 font-semibold text-emerald-800">Accepted Payment Methods</h4>
+                    <h4 className="mb-3 font-semibold text-emerald-800">
+                      Accepted Payment Methods
+                    </h4>
                     <div className="flex flex-wrap gap-3">
-                      {paymentDetails.methods.map((method, index) => (
+                      {paymentDetails.methods.map((method) => (
                         <div
-                          key={index}
+                          key={method.method}
                           className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-white px-3 py-2"
                         >
-                          {method.method === 'Paytm' && <SiPaytm className="h-5 w-5 text-blue-600" />}
-                          {method.method === 'Google Pay' && <SiGooglepay className="h-5 w-5 text-blue-600" />}
-                          {method.method === 'PhonePe' && <SiPhonepe className="h-5 w-5 text-purple-600" />}
-                          <span className="text-sm font-medium text-gray-700">{method.method}</span>
+                          {method.method === "Paytm" && (
+                            <SiPaytm className="h-5 w-5 text-blue-600" />
+                          )}
+                          {method.method === "Google Pay" && (
+                            <SiGooglepay className="h-5 w-5 text-blue-600" />
+                          )}
+                          {method.method === "PhonePe" && (
+                            <SiPhonepe className="h-5 w-5 text-purple-600" />
+                          )}
+                          <span className="text-sm font-medium text-gray-700">
+                            {method.method}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -274,22 +317,31 @@ export default function ContactPage() {
                     <div className="flex items-start gap-3">
                       <Smartphone className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-600" />
                       <div>
-                        <h4 className="mb-1 text-sm font-semibold text-emerald-800">Payment Number</h4>
-                        <p className="text-sm text-gray-700">{paymentDetails.methods[0]?.number}</p>
+                        <h4 className="mb-1 text-sm font-semibold text-emerald-800">
+                          Payment Number
+                        </h4>
+                        <p className="text-sm text-gray-700">
+                          {paymentDetails.methods[0]?.number}
+                        </p>
                       </div>
                     </div>
 
                     <div className="flex items-start gap-3">
                       <CreditCard className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-600" />
                       <div>
-                        <h4 className="mb-1 text-sm font-semibold text-emerald-800">UPI ID</h4>
-                        <p className="font-mono text-sm text-gray-700">{paymentDetails.methods[0]?.upiId}</p>
+                        <h4 className="mb-1 text-sm font-semibold text-emerald-800">
+                          UPI ID
+                        </h4>
+                        <p className="font-mono text-sm text-gray-700">
+                          {paymentDetails.methods[0]?.upiId}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   <p className="text-xs text-gray-600">
-                    You can make payments using any of the above methods for consultations and services.
+                    You can make payments using any of the above methods for
+                    consultations and services.
                   </p>
                 </CardContent>
               </Card>
@@ -303,7 +355,9 @@ export default function ContactPage() {
                     <div className="text-center">
                       <MapPin className="mx-auto mb-2 h-12 w-12 text-emerald-600" />
                       <p className="text-sm text-gray-600">Map Location</p>
-                      <p className="px-4 text-xs text-gray-500">{clinicContactInfo.address}</p>
+                      <p className="px-4 text-xs text-gray-500">
+                        {clinicContactInfo.address}
+                      </p>
                     </div>
                   </div>
                 </div>
