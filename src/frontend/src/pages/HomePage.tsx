@@ -111,7 +111,7 @@ export default function HomePage() {
             <div className="relative">
               <div className="overflow-hidden rounded-2xl shadow-2xl ring-4 ring-white/20">
                 <img
-                  src="/assets/IMG-20250504-WA0008.jpg"
+                  src="/assets/img_20260401_145036-019d4858-d3f7-7575-9c32-2a3803da1d90.png"
                   alt="Dr. Tariq Akhoon - BRC Clinician"
                   className="h-full w-full object-cover"
                 />
