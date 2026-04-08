@@ -38,7 +38,6 @@ import {
   Users,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Appointment, ConsultationType, Status } from "../backend";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   useGetAllAppointments,
@@ -48,6 +47,8 @@ import {
   useIsCallerAdmin,
   useUpdateAppointmentStatus,
 } from "../hooks/useQueries";
+import { ConsultationType, Status } from "../types";
+import type { Appointment } from "../types";
 
 type SortField = "name" | "date" | "status" | "none";
 type SortDirection = "asc" | "desc";

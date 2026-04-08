@@ -19,9 +19,9 @@ import {
 } from "@/components/ui/table";
 import { AlertCircle, ArrowUpDown, Loader2, Search, Users } from "lucide-react";
 import { useMemo, useState } from "react";
-import { PatientStatus, Status } from "../backend";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useGetAllPatientDetails, useIsCallerAdmin } from "../hooks/useQueries";
+import { PatientStatus, Status } from "../types";
 
 type SortField =
   | "name"
@@ -361,10 +361,14 @@ export default function AdminPatientsPage() {
                         {patient.mostRecentAppointmentDate}
                       </TableCell>
                       <TableCell>
-                        {getAppointmentStatusBadge(patient.status)}
+                        {getAppointmentStatusBadge(
+                          patient.status as unknown as Status,
+                        )}
                       </TableCell>
                       <TableCell>
-                        {getStatusBadge(patient.lastVisitStatus)}
+                        {getStatusBadge(
+                          patient.lastVisitStatus as unknown as PatientStatus,
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

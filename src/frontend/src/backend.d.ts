@@ -7,11 +7,6 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface UserProfile {
-    name: string;
-    email: string;
-    phone: string;
-}
 export interface Appointment {
     id: bigint;
     status: Status;
@@ -23,11 +18,6 @@ export interface Appointment {
     isNew: boolean;
     healthConcerns: string;
     consultationType: ConsultationType;
-}
-export interface TransformationOutput {
-    status: bigint;
-    body: Uint8Array;
-    headers: Array<http_header>;
 }
 export type Time = bigint;
 export interface PaymentMethod {
@@ -64,21 +54,8 @@ export interface PatientDetails {
     lastAppointmentTimestamp: Time;
     mostRecentAppointmentDate: string;
 }
-export interface http_header {
-    value: string;
-    name: string;
-}
-export interface http_request_result {
-    status: bigint;
-    body: Uint8Array;
-    headers: Array<http_header>;
-}
 export interface HomePage {
     headline: string;
-}
-export interface TransformationInput {
-    context: Uint8Array;
-    response: http_request_result;
 }
 export interface PaymentDetails {
     methods: Array<PaymentMethod>;
@@ -94,6 +71,11 @@ export interface Inquiry {
 export interface ContactInfo {
     email: string;
     address: string;
+    phone: string;
+}
+export interface UserProfile {
+    name: string;
+    email: string;
     phone: string;
 }
 export interface Testimonial {
@@ -116,14 +98,8 @@ export enum Status {
     completed = "completed",
     confirmed = "confirmed"
 }
-export enum UserRole {
-    admin = "admin",
-    user = "user",
-    guest = "guest"
-}
 export interface backendInterface {
     addCustomService(name: string, description: string, serviceTypeName: string, serviceTypePrice: number): Promise<void>;
-    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     deleteService(id: bigint): Promise<void>;
     disableEmailNotifications(arg0: null): Promise<void>;
     enableEmailNotifications(arg0: null): Promise<void>;
@@ -131,7 +107,6 @@ export interface backendInterface {
     getAllPatientDetails(): Promise<Array<PatientDetails>>;
     getAllServices(): Promise<Array<Service>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
-    getCallerUserRole(): Promise<UserRole>;
     getDoctorProfile(): Promise<DoctorProfile>;
     getEmailSettings(): Promise<EmailNotificationSettings>;
     getHomePage(): Promise<HomePage>;
@@ -141,14 +116,15 @@ export interface backendInterface {
     getSortedPatientDetails(sortBy: bigint): Promise<Array<PatientDetails>>;
     getTestimonials(): Promise<Array<Testimonial>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
-    isCallerAdmin(): Promise<boolean>;
+    isCallerAdmin(caller: Principal): Promise<boolean>;
     markAppointmentsAsViewed(): Promise<void>;
+    removeAdmin(target: Principal): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     searchPatientDetails(searchTerm: string): Promise<Array<PatientDetails>>;
+    setAdmin(target: Principal): Promise<void>;
     submitAppointment(newAppointment: Appointment): Promise<bigint>;
     submitInquiry(inquiry: Inquiry): Promise<void>;
     submitTestimonial(testimonial: Testimonial): Promise<void>;
-    transform(input: TransformationInput): Promise<TransformationOutput>;
     updateAppointmentStatus(id: bigint, status: Status): Promise<void>;
     updateService(id: bigint, updatedService: Service): Promise<void>;
 }

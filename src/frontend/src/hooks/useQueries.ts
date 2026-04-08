@@ -11,7 +11,7 @@ import type {
   Status,
   Testimonial,
   UserProfile,
-} from "../backend";
+} from "../types";
 import { useActor } from "./useActor";
 
 // User Profile Queries
@@ -123,7 +123,7 @@ export function useSubmitAppointment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (appointment: Appointment) => {
+    mutationFn: async (appointment: Partial<Appointment>) => {
       if (!actor) throw new Error("Actor not available");
       const appointmentId = await actor.submitAppointment(appointment);
       return appointmentId;
@@ -274,7 +274,7 @@ export function useSubmitTestimonial() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (testimonial: Testimonial) => {
+    mutationFn: async (testimonial: Partial<Testimonial>) => {
       if (!actor) throw new Error("Actor not available");
       return actor.submitTestimonial(testimonial);
     },

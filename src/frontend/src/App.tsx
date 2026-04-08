@@ -13,6 +13,7 @@ import Header from "./components/Header";
 import OfflineIndicator from "./components/OfflineIndicator";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import ProfileSetupModal from "./components/ProfileSetupModal";
+import WhatsAppButton from "./components/WhatsAppButton";
 import { useInternetIdentity } from "./hooks/useInternetIdentity";
 import { useKeepAlive } from "./hooks/useKeepAlive";
 import { useGetCallerUserProfile, useIsCallerAdmin } from "./hooks/useQueries";
@@ -62,6 +63,7 @@ function Layout() {
       </main>
       <Footer />
       {showProfileSetup && <ProfileSetupModal />}
+      <WhatsAppButton />
       <PWAInstallPrompt />
       <OfflineIndicator />
     </div>

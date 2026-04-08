@@ -1,0 +1,112 @@
+// Version: 3.0.0
+type Appointment__384223623 =
+  {
+    consultationType : ConsultationType__1021124731;
+    contactInfo : Text;
+    dateSubmitted : Text;
+    healthConcerns : Text;
+    id : Nat;
+    isNew : Bool;
+    patientName : Text;
+    preferredDateTime : Text;
+    status : Status__1000080315;
+    timestamp : Time__900049286
+  };
+type ConsultationType__1021124731 = {#clinicVisit; #online};
+type Data__791452850<K, V> =
+  {var count : Nat__490723111; kvs : [var ?(K, V)]};
+type Inquiry__931573009 =
+  {contactInfo : Text; dateSubmitted : Text; message : Text; name : Text};
+type Int__270357528 = Int__616954475;
+type Int__616954475 = Int;
+type Internal__8484328<K, V> =
+  {children : [var ?Node__46230540<K, V>]; data : Data__791452850<K, V>};
+type Leaf__809889148<K, V> = {data : Data__791452850<K, V>};
+type Map__158565046<K, V> = Map__297112838<K, V>;
+type Map__297112838<K, V> =
+  {var root : Node__46230540<K, V>; var size : Nat__490723111};
+type Map__605269027<K, V> = Map__158565046<K, V>;
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type Node__46230540<K, V> =
+  {#internal : Internal__8484328<K, V>; #leaf : Leaf__809889148<K, V>};
+type Status__1000080315 = {#cancelled; #completed; #confirmed; #pending};
+type Testimonial__393323594 =
+  {dateSubmitted : Text; message : Text; patientName : Text; rating : Nat8};
+type Time__796480547 = Int__270357528;
+type Time__900049286 = Time__796480547;
+type UserProfile__491224006 = {email : Text; name : Text; phone : Text};
+actor ({
+  in admins : Map__605269027<Principal, Bool>;
+  stable appointmentList :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Appointment__384223623]];
+      var elementIndex : Nat__490723111
+    };
+  stable var emailSettings : {isEnabled : Bool; recipientEmail : Text};
+  stable homePage : {headline : Text};
+  stable inquiryList :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Inquiry__931573009]];
+      var elementIndex : Nat__490723111
+    };
+  stable var nextAppointmentId : Nat;
+  stable var nextServiceId : Nat;
+  stable var services :
+    [{
+       description : Text;
+       id : Nat;
+       name : Text;
+       serviceType : {serviceTypeName : Text; serviceTypePrice : Float}
+     }];
+  stable testimonialList :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Testimonial__393323594]];
+      var elementIndex : Nat__490723111
+    };
+  stable userProfiles :
+    {
+      var root : Node__46230540<Principal, UserProfile__491224006>;
+      var size : Nat__490723111
+    }
+}, {
+  stable admins :
+    {var root : Node__46230540<Principal, Bool>; var size : Nat__490723111};
+  stable appointmentList :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Appointment__384223623]];
+      var elementIndex : Nat__490723111
+    };
+  stable var emailSettings : {isEnabled : Bool; recipientEmail : Text};
+  stable homePage : {headline : Text};
+  stable inquiryList :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Inquiry__931573009]];
+      var elementIndex : Nat__490723111
+    };
+  stable var nextAppointmentId : Nat;
+  stable var nextServiceId : Nat;
+  stable var services :
+    [{
+       description : Text;
+       id : Nat;
+       name : Text;
+       serviceType : {serviceTypeName : Text; serviceTypePrice : Float}
+     }];
+  stable testimonialList :
+    {
+      var blockIndex : Nat__490723111;
+      var blocks : [var [var ?Testimonial__393323594]];
+      var elementIndex : Nat__490723111
+    };
+  stable userProfiles :
+    {
+      var root : Node__46230540<Principal, UserProfile__491224006>;
+      var size : Nat__490723111
+    }
+}) ;

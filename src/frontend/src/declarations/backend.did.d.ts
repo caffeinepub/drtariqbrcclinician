@@ -85,59 +85,13 @@ export interface Testimonial {
   'rating' : number,
 }
 export type Time = bigint;
-export interface TransformationInput {
-  'context' : Uint8Array,
-  'response' : http_request_result,
-}
-export interface TransformationOutput {
-  'status' : bigint,
-  'body' : Uint8Array,
-  'headers' : Array<http_header>,
-}
 export interface UserProfile {
   'name' : string,
   'email' : string,
   'phone' : string,
 }
-export type UserRole = { 'admin' : null } |
-  { 'user' : null } |
-  { 'guest' : null };
-export interface _CaffeineStorageCreateCertificateResult {
-  'method' : string,
-  'blob_hash' : string,
-}
-export interface _CaffeineStorageRefillInformation {
-  'proposed_top_up_amount' : [] | [bigint],
-}
-export interface _CaffeineStorageRefillResult {
-  'success' : [] | [boolean],
-  'topped_up_amount' : [] | [bigint],
-}
-export interface http_header { 'value' : string, 'name' : string }
-export interface http_request_result {
-  'status' : bigint,
-  'body' : Uint8Array,
-  'headers' : Array<http_header>,
-}
 export interface _SERVICE {
-  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
-  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
-  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
-    [Array<Uint8Array>],
-    undefined
-  >,
-  '_caffeineStorageCreateCertificate' : ActorMethod<
-    [string],
-    _CaffeineStorageCreateCertificateResult
-  >,
-  '_caffeineStorageRefillCashier' : ActorMethod<
-    [[] | [_CaffeineStorageRefillInformation]],
-    _CaffeineStorageRefillResult
-  >,
-  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
-  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addCustomService' : ActorMethod<[string, string, string, number], undefined>,
-  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'deleteService' : ActorMethod<[bigint], undefined>,
   'disableEmailNotifications' : ActorMethod<[null], undefined>,
   'enableEmailNotifications' : ActorMethod<[null], undefined>,
@@ -145,7 +99,6 @@ export interface _SERVICE {
   'getAllPatientDetails' : ActorMethod<[], Array<PatientDetails>>,
   'getAllServices' : ActorMethod<[], Array<Service>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
-  'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getDoctorProfile' : ActorMethod<[], DoctorProfile>,
   'getEmailSettings' : ActorMethod<[], EmailNotificationSettings>,
   'getHomePage' : ActorMethod<[], HomePage>,
@@ -155,14 +108,15 @@ export interface _SERVICE {
   'getSortedPatientDetails' : ActorMethod<[bigint], Array<PatientDetails>>,
   'getTestimonials' : ActorMethod<[], Array<Testimonial>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
-  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'isCallerAdmin' : ActorMethod<[Principal], boolean>,
   'markAppointmentsAsViewed' : ActorMethod<[], undefined>,
+  'removeAdmin' : ActorMethod<[Principal], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'searchPatientDetails' : ActorMethod<[string], Array<PatientDetails>>,
+  'setAdmin' : ActorMethod<[Principal], undefined>,
   'submitAppointment' : ActorMethod<[Appointment], bigint>,
   'submitInquiry' : ActorMethod<[Inquiry], undefined>,
   'submitTestimonial' : ActorMethod<[Testimonial], undefined>,
-  'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateAppointmentStatus' : ActorMethod<
     [
       bigint,

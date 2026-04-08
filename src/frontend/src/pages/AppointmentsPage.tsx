@@ -30,7 +30,6 @@ import {
 import { useState } from "react";
 import { SiGooglepay, SiPaytm, SiPhonepe } from "react-icons/si";
 import { toast } from "sonner";
-import { ConsultationType, Status } from "../backend";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   useGetCallerUserProfile,
@@ -38,6 +37,7 @@ import {
   useGetPaymentDetails,
   useSubmitAppointment,
 } from "../hooks/useQueries";
+import { ConsultationType, Status } from "../types";
 
 export default function AppointmentsPage() {
   const { identity } = useInternetIdentity();

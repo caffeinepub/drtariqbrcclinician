@@ -1,0 +1,140 @@
+type UserProfile = 
+ record {
+   email: text;
+   name: text;
+   phone: text;
+ };
+type Time = int;
+type Testimonial = 
+ record {
+   dateSubmitted: text;
+   message: text;
+   patientName: text;
+   rating: nat8;
+ };
+type Status = 
+ variant {
+   cancelled;
+   completed;
+   confirmed;
+   pending;
+ };
+type Service = 
+ record {
+   description: text;
+   id: nat;
+   name: text;
+   serviceType: record {
+                  serviceTypeName: text;
+                  serviceTypePrice: float64;
+                };
+ };
+type PaymentMethod = 
+ record {
+   method: text;
+   number: text;
+   upiId: text;
+ };
+type PaymentDetails = 
+ record {
+   currency: text;
+   email: text;
+   methods: vec PaymentMethod;
+ };
+type PatientStatus = 
+ variant {
+   active;
+   inactive;
+ };
+type PatientDetails = 
+ record {
+   appointmentCount: nat;
+   contactInfo: ContactInfo;
+   lastAppointmentTimestamp: Time;
+   lastVisitStatus: PatientStatus;
+   mostRecentAppointmentDate: text;
+   name: text;
+   status: Status;
+ };
+type Inquiry = 
+ record {
+   contactInfo: text;
+   dateSubmitted: text;
+   message: text;
+   name: text;
+ };
+type HomePage = record {headline: text;};
+type EmailNotificationSettings = 
+ record {
+   isEnabled: bool;
+   recipientEmail: text;
+ };
+type DoctorProfile = 
+ record {
+   biography: text;
+   contactInfo: ContactInfo;
+   name: text;
+   philosophy: text;
+   qualifications: text;
+ };
+type ContactInfo = 
+ record {
+   address: text;
+   email: text;
+   phone: text;
+ };
+type ConsultationType = 
+ variant {
+   clinicVisit;
+   online;
+ };
+type Appointment = 
+ record {
+   consultationType: ConsultationType;
+   contactInfo: text;
+   dateSubmitted: text;
+   healthConcerns: text;
+   id: nat;
+   isNew: bool;
+   patientName: text;
+   preferredDateTime: text;
+   status: Status;
+   timestamp: Time;
+ };
+service : {
+  addCustomService: (name: text, description: text, serviceTypeName: 
+   text, serviceTypePrice: float64) -> ();
+  deleteService: (id: nat) -> ();
+  disableEmailNotifications: (null) -> ();
+  enableEmailNotifications: (null) -> ();
+  getAllAppointments: () -> (vec Appointment) query;
+  getAllPatientDetails: () -> (vec PatientDetails) query;
+  getAllServices: () -> (vec Service) query;
+  getCallerUserProfile: () -> (opt UserProfile) query;
+  getDoctorProfile: () -> (DoctorProfile) query;
+  getEmailSettings: () -> (EmailNotificationSettings) query;
+  getHomePage: () -> (HomePage) query;
+  getInquiries: () -> (vec Inquiry) query;
+  getNewAppointmentsCount: () -> (nat) query;
+  getPaymentDetails: () -> (PaymentDetails) query;
+  getSortedPatientDetails: (sortBy: nat) -> (vec PatientDetails) query;
+  getTestimonials: () -> (vec Testimonial) query;
+  getUserProfile: (user: principal) -> (opt UserProfile) query;
+  isCallerAdmin: (caller: principal) -> (bool) query;
+  markAppointmentsAsViewed: () -> ();
+  removeAdmin: (target: principal) -> ();
+  saveCallerUserProfile: (profile: UserProfile) -> ();
+  searchPatientDetails: (searchTerm: text) -> (vec PatientDetails) query;
+  setAdmin: (target: principal) -> ();
+  submitAppointment: (newAppointment: Appointment) -> (nat);
+  submitInquiry: (inquiry: Inquiry) -> ();
+  submitTestimonial: (testimonial: Testimonial) -> ();
+  updateAppointmentStatus: (id: nat, status:
+   variant {
+     cancelled;
+     completed;
+     confirmed;
+     pending;
+   }) -> ();
+  updateService: (id: nat, updatedService: Service) -> ();
+}

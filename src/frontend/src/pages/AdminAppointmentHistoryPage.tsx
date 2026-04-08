@@ -18,10 +18,10 @@ import {
 } from "@/components/ui/table";
 import { AlertCircle, Filter, History, RefreshCw, Shield } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import type { Appointment } from "../backend";
-import { ConsultationType, Status } from "../backend";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import { useGetAllAppointments, useIsCallerAdmin } from "../hooks/useQueries";
+import { ConsultationType, Status } from "../types";
+import type { Appointment } from "../types";
 
 type StatusFilter = "all" | Status;
 

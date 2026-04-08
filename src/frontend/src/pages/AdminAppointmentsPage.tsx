@@ -36,7 +36,6 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ConsultationType, Status } from "../backend";
 import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   useGetAllAppointments,
@@ -44,6 +43,7 @@ import {
   useMarkAppointmentsAsViewed,
   useUpdateAppointmentStatus,
 } from "../hooks/useQueries";
+import { ConsultationType, Status } from "../types";
 
 type SortField =
   | "dateSubmitted"

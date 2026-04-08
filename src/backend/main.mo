@@ -1,5 +1,4 @@
 import Text "mo:core/Text";
-import Iter "mo:core/Iter";
 import Nat "mo:core/Nat";
 import List "mo:core/List";
 import Time "mo:core/Time";
@@ -8,11 +7,15 @@ import Runtime "mo:core/Runtime";
 import Order "mo:core/Order";
 import Map "mo:core/Map";
 import Principal "mo:core/Principal";
-import MixinStorage "blob-storage/Mixin";
-import MixinAuthorization "authorization/MixinAuthorization";
-import AccessControl "authorization/access-control";
-import OutCall "http-outcalls/outcall";
 
+// Migration: drop the old `admins` stable variable from the previous version
+(with migration =
+  func(_ : {
+    admins : Map.Map<Principal, Bool>;
+  }) : {} {
+    {};
+  }
+)
 actor {
   type ContactInfo = {
     phone : Text;
@@ -123,7 +126,36 @@ actor {
     headline : Text;
   };
 
-  // Persistent storage variables
+  // --- Inline access control ---
+  let admins = Map.empty<Principal, Bool>();
+
+  func isAdmin(p : Principal) : Bool {
+    switch (admins.get(p)) {
+      case (?true) { true };
+      case (_) { false };
+    };
+  };
+
+  // Allow the first caller to register themselves as admin, or any existing admin to add another
+  public shared ({ caller }) func setAdmin(target : Principal) : async () {
+    if (admins.size() > 0 and not isAdmin(caller)) {
+      Runtime.trap("Unauthorized: Only existing admin can add admins");
+    };
+    admins.add(target, true);
+  };
+
+  public shared ({ caller }) func removeAdmin(target : Principal) : async () {
+    if (not isAdmin(caller)) {
+      Runtime.trap("Unauthorized: Only admin can remove admins");
+    };
+    admins.remove(target);
+  };
+
+  public query func isCallerAdmin(caller : Principal) : async Bool {
+    isAdmin(caller);
+  };
+
+  // --- Persistent storage variables ---
   let userProfiles = Map.empty<Principal, UserProfile>();
   let testimonialList = List.empty<Testimonial>();
   let inquiryList = List.empty<Inquiry>();
@@ -285,9 +317,7 @@ actor {
     func isActive(lastAppointmentTimestamp : Time.Time) : Bool {
       let currentTime = Time.now();
       let thirtyDaysInNanos = 30 * 24 * 60 * 60 * 1_000_000_000;
-      (
-        currentTime - lastAppointmentTimestamp <= thirtyDaysInNanos
-      );
+      (currentTime - lastAppointmentTimestamp <= thirtyDaysInNanos);
     };
 
     public func getPatientStatus(lastAppointmentTimestamp : Time.Time) : PatientStatus {
@@ -295,17 +325,11 @@ actor {
     };
   };
 
-  module Appointment {
+  module AppointmentComparator {
     public func compareByDate(a : Appointment, b : Appointment) : Order.Order {
       Text.compare(a.dateSubmitted, b.dateSubmitted);
     };
   };
-
-  // Initialize the access control state
-  let accessControlState = AccessControl.initState();
-  include MixinAuthorization(accessControlState);
-
-  include MixinStorage();
 
   // Email Notification System Settings
   type EmailNotificationSettings = {
@@ -319,103 +343,57 @@ actor {
   };
 
   public query ({ caller }) func getEmailSettings() : async EmailNotificationSettings {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can view email settings");
     };
     emailSettings;
   };
 
   public shared ({ caller }) func enableEmailNotifications(_ : ()) : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can enable email notifications");
     };
-    emailSettings := {
-      emailSettings with
-      isEnabled = true;
-    };
+    emailSettings := { emailSettings with isEnabled = true };
   };
 
   public shared ({ caller }) func disableEmailNotifications(_ : ()) : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can disable email notifications");
     };
-    emailSettings := {
-      emailSettings with
-      isEnabled = false;
-    };
+    emailSettings := { emailSettings with isEnabled = false };
   };
 
-  // Email Sending Function
-  public query ({ caller }) func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
-    OutCall.transform(input);
-  };
-
+  // Email sending is a no-op stub (http-outcalls extension not available)
   func sendEmailNotification(
-    patientName : Text,
-    contactInfo : Text,
-    preferredDateTime : Text,
-    consultationType : ConsultationType,
-    healthConcerns : Text,
+    _patientName : Text,
+    _contactInfo : Text,
+    _preferredDateTime : Text,
+    _consultationType : ConsultationType,
+    _healthConcerns : Text,
   ) : async () {
-    if (not emailSettings.isEnabled) { Runtime.trap("Email notification feature not enabled.") };
-
-    let consultationTypeStr = switch (consultationType) {
-      case (#online) { "Online Consultation" };
-      case (#clinicVisit) { "Clinic Visit" };
-    };
-
-    let emailBody = "New Appointment Request\n\n" #
-    "Patient Name: " # patientName # "\n" #
-    "Contact Info: " # contactInfo # "\n" #
-    "Preferred Date & Time: " # preferredDateTime # "\n" #
-    "Consultation Type: " # consultationTypeStr # "\n" #
-    "Health Concerns: " # healthConcerns # "\n";
-
-    let emailPayload = "{\n" #
-    "  \"to\": \"" # emailSettings.recipientEmail # "\",\n" #
-    "  \"subject\": \"New Online Appointment Request\",\n" #
-    "  \"body\": \"" # emailBody # "\"\n" #
-    "}";
-
-    let _responseBody = await OutCall.httpPostRequest(
-      "https://croneric.com/api/000010C6/email",
-      [
-        {
-          name = "Content-Type";
-          value = "application/json";
-        },
-      ],
-      emailPayload,
-      transform,
-    );
+    // Email notifications require the http-outcalls extension; skipped in this build
   };
 
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can view profiles");
-    };
     userProfiles.get(caller);
   };
 
   public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
-    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+    if (caller != user and not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Can only view your own profile");
     };
     userProfiles.get(user);
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
-    };
     userProfiles.add(caller, profile);
   };
 
-  public query ({ caller }) func getHomePage() : async HomePage {
+  public query func getHomePage() : async HomePage {
     homePage;
   };
 
-  public query ({ caller }) func getDoctorProfile() : async DoctorProfile {
+  public query func getDoctorProfile() : async DoctorProfile {
     {
       name = "Dr. Tariq Akhoon";
       qualifications = "BNYS/MD, Certified Integrative Medicine Naturopath";
@@ -429,7 +407,7 @@ actor {
     };
   };
 
-  public query ({ caller }) func getAllServices() : async [Service] {
+  public query func getAllServices() : async [Service] {
     services;
   };
 
@@ -439,24 +417,21 @@ actor {
     serviceTypeName : Text,
     serviceTypePrice : Float,
   ) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can add services");
     };
     let service : Service = {
       id = nextServiceId;
       name;
       description;
-      serviceType = {
-        serviceTypeName;
-        serviceTypePrice;
-      };
+      serviceType = { serviceTypeName; serviceTypePrice };
     };
     services := services.concat([service]);
     nextServiceId += 1;
   };
 
   public shared ({ caller }) func updateService(id : Nat, updatedService : Service) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can update services");
     };
     let updatedServices = Array.tabulate(
@@ -469,25 +444,23 @@ actor {
   };
 
   public shared ({ caller }) func deleteService(id : Nat) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can delete services");
     };
-
     if (id <= 15) {
       Runtime.trap("Cannot delete standard BRC services");
     };
-
     services := services.filter<Service>(func(service) { service.id != id });
   };
 
   public query ({ caller }) func getAllAppointments() : async [Appointment] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can view all appointments");
     };
-    appointmentList.sort(Appointment.compareByDate).toArray();
+    appointmentList.sort(AppointmentComparator.compareByDate).toArray();
   };
 
-  public shared ({ caller }) func submitAppointment(newAppointment : Appointment) : async Nat {
+  public shared func submitAppointment(newAppointment : Appointment) : async Nat {
     let appointmentWithId = {
       newAppointment with
       id = nextAppointmentId;
@@ -509,16 +482,12 @@ actor {
   };
 
   public shared ({ caller }) func markAppointmentsAsViewed() : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can mark appointments as viewed");
     };
     let updatedAppointments = appointmentList.map<Appointment, Appointment>(
       func(appointment) {
-        if (AppointmentHelper.isOld(appointment)) {
-          { appointment with isNew = false };
-        } else {
-          appointment;
-        };
+        { appointment with isNew = false };
       }
     );
     appointmentList.clear();
@@ -528,7 +497,7 @@ actor {
   };
 
   public shared ({ caller }) func updateAppointmentStatus(id : Nat, status : { #pending; #confirmed; #cancelled; #completed }) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can update appointment status");
     };
     let appointments = appointmentList.toArray();
@@ -548,32 +517,32 @@ actor {
   };
 
   public query ({ caller }) func getNewAppointmentsCount() : async Nat {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can view new appointments count");
     };
-    appointmentList.filter(AppointmentHelper.isNew).size();
+    appointmentList.filter(func(a : Appointment) : Bool { a.isNew }).size();
   };
 
-  public shared ({ caller }) func submitTestimonial(testimonial : Testimonial) : async () {
+  public shared func submitTestimonial(testimonial : Testimonial) : async () {
     testimonialList.add(testimonial);
   };
 
-  public query ({ caller }) func getTestimonials() : async [Testimonial] {
+  public query func getTestimonials() : async [Testimonial] {
     testimonialList.toArray();
   };
 
-  public shared ({ caller }) func submitInquiry(inquiry : Inquiry) : async () {
+  public shared func submitInquiry(inquiry : Inquiry) : async () {
     inquiryList.add(inquiry);
   };
 
   public query ({ caller }) func getInquiries() : async [Inquiry] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can view inquiries");
     };
     inquiryList.toArray();
   };
 
-  public query ({ caller }) func getPaymentDetails() : async PaymentDetails {
+  public query func getPaymentDetails() : async PaymentDetails {
     {
       methods = [
         { method = "Paytm"; number = "+91 7006566575"; upiId = "cpobyoh@oksbi" },
@@ -585,20 +554,8 @@ actor {
     };
   };
 
-  // Helper functions
-  module AppointmentHelper {
-    public func isNew(appointment : Appointment) : Bool {
-      appointment.isNew;
-    };
-
-    public func isOld(appointment : Appointment) : Bool {
-      not appointment.isNew;
-    };
-  };
-
   // --- Patient Details Functionality ---
 
-  // Helper function to build patient details map from appointments
   func buildPatientDetailsMap() : Map.Map<Text, PatientDetails> {
     let patientMap = Map.empty<Text, PatientDetails>();
 
@@ -613,7 +570,6 @@ actor {
 
       switch (existingPatient) {
         case (?patient) {
-          // Update existing patient if this appointment is more recent
           if (appointment.timestamp > patient.lastAppointmentTimestamp) {
             let updatedPatient : PatientDetails = {
               patient with
@@ -625,7 +581,6 @@ actor {
             };
             patientMap.add(appointment.patientName, updatedPatient);
           } else {
-            // Just increment count, keep most recent date
             let updatedPatient : PatientDetails = {
               patient with
               appointmentCount = patient.appointmentCount + 1;
@@ -652,25 +607,15 @@ actor {
   };
 
   public query ({ caller }) func getAllPatientDetails() : async [PatientDetails] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can view patient details");
     };
-
     let patientMap = buildPatientDetailsMap();
-    let iter = patientMap.values();
-    iter.toArray();
-  };
-
-  func getEmail(contactInfo : Text) : Text {
-    contactInfo;
-  };
-
-  func getPhone(contactInfo : Text) : Text {
-    contactInfo;
+    patientMap.values().toArray();
   };
 
   public query ({ caller }) func searchPatientDetails(searchTerm : Text) : async [PatientDetails] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can search patient details");
     };
 
@@ -695,7 +640,7 @@ actor {
   };
 
   public query ({ caller }) func getSortedPatientDetails(sortBy : Nat) : async [PatientDetails] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+    if (not isAdmin(caller)) {
       Runtime.trap("Unauthorized: Only admin can sort patient details");
     };
 
